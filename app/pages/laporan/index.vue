@@ -24,9 +24,9 @@
             v-model="searchQuery" 
             type="text" 
             :placeholder="authStore.isAdmin ? 'Cari nama pegawai, lokasi, kegiatan...' : 'Cari uraian atau lokasi kegiatan...'" 
-            class="input-base pl-10"
+            class="input-base input-has-icon-left"
           />
-          <Search class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
 
         <!-- Filter Bulan -->
@@ -140,7 +140,7 @@
           </div>
         </div>
 
-        <!-- Pagination Controls (PRD Section 20 - Default 10 data/halaman) -->
+        <!-- Pagination Controls -->
         <div v-if="totalPages > 1" class="flex items-center justify-between card-base p-4 mt-6">
           <p class="text-xs text-slate-500">
             Menampilkan <span class="font-bold text-slate-700">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
@@ -229,7 +229,6 @@ onMounted(() => {
   }, 200)
 })
 
-// Filtered list based on role, search, month, year
 const filteredLaporan = computed(() => {
   const targetUser = authStore.isAdmin ? undefined : authStore.currentUser?.id
   return laporanStore.getLaporanFiltered(
@@ -247,7 +246,6 @@ const paginatedLaporan = computed(() => {
   return filteredLaporan.value.slice(start, start + itemsPerPage)
 })
 
-// Reset page when filter changes
 watch([searchQuery, filterMonth, filterYear], () => {
   currentPage.value = 1
 })
@@ -263,9 +261,9 @@ function openDeleteConfirm(id: string) {
   isConfirmOpen.value = true
 }
 
-function handleDelete() {
+async function handleDelete() {
   if (targetDeleteId.value) {
-    const success = laporanStore.deleteLaporan(targetDeleteId.value)
+    const success = await laporanStore.deleteLaporan(targetDeleteId.value)
     if (success) {
       toast.success('Berhasil menghapus laporan!')
     } else {

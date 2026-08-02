@@ -20,9 +20,9 @@
           v-model="searchQuery" 
           type="text" 
           placeholder="Cari nama pegawai, username, jabatan, atau seksi..." 
-          class="input-base pl-10" 
+          class="input-base input-has-icon-left" 
         />
-        <Search class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <Search class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
       </div>
     </div>
 
@@ -225,12 +225,12 @@ function openEditModal(u: UserProfile) {
   isModalOpen.value = true
 }
 
-function saveUser() {
+async function saveUser() {
   if (editingUserId.value) {
-    usersStore.updateUser(editingUserId.value, userForm.value)
+    await usersStore.updateUser(editingUserId.value, userForm.value)
     toast.success('Data pegawai berhasil diperbarui!')
   } else {
-    usersStore.addUser(userForm.value)
+    await usersStore.addUser(userForm.value)
     toast.success('Pegawai baru berhasil ditambahkan!')
   }
   isModalOpen.value = false
@@ -241,9 +241,9 @@ function openDeleteConfirm(id: string) {
   isConfirmOpen.value = true
 }
 
-function handleDelete() {
+async function handleDelete() {
   if (targetDeleteId.value) {
-    usersStore.deleteUser(targetDeleteId.value)
+    await usersStore.deleteUser(targetDeleteId.value)
     toast.success('Data pegawai berhasil dihapus!')
   }
   isConfirmOpen.value = false

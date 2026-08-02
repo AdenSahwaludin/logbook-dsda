@@ -64,10 +64,10 @@
           <input 
             v-model="form.lokasiKegiatan" 
             type="text" 
-            class="input-base pl-10" 
+            class="input-base input-has-icon-left" 
             required 
           />
-          <MapPin class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <MapPin class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
       </div>
 
@@ -193,9 +193,9 @@ function openConfirm() {
   isConfirmOpen.value = true
 }
 
-function submitForm() {
+async function submitForm() {
   isConfirmOpen.value = false
-  const updated = laporanStore.updateLaporan(laporanId, {
+  const updated = await laporanStore.updateLaporan(laporanId, {
     tanggal: form.value.tanggal,
     hari: form.value.hari,
     lokasiKegiatan: form.value.lokasiKegiatan,

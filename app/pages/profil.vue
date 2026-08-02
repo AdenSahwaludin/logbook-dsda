@@ -99,11 +99,11 @@
       </form>
     </div>
 
-    <!-- Session & Quick Role Control Card -->
+    <!-- Session & Control Card -->
     <div class="card-base p-5 flex items-center justify-between gap-4">
       <div class="space-y-0.5">
-        <p class="text-xs font-bold text-slate-900">Simulasi Mode Role</p>
-        <p class="text-xs text-slate-500">Saat ini aktif sebagai {{ authStore.currentUser?.role }}</p>
+        <p class="text-xs font-bold text-slate-900">Keluar Sesi Login</p>
+        <p class="text-xs text-slate-500">Aktif sebagai @{{ authStore.currentUser?.username }}</p>
       </div>
 
       <button 
@@ -132,25 +132,29 @@ const oldPassword = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
 
-function handleUpdatePassword() {
+async function handleUpdatePassword() {
   if (newPassword.value !== confirmPassword.value) {
     toast.error('Konfirmasi password baru tidak cocok!')
     return
   }
 
-  const res = authStore.updatePassword(oldPassword.value, newPassword.value)
-  if (res.success) {
-    toast.success(res.message)
-    oldPassword.value = ''
-    newPassword.value = ''
-    confirmPassword.value = ''
-  } else {
-    toast.error(res.message)
+  try {
+    const res = await authStore.updatePassword(oldPassword.value, newPassword.value)
+    if (res.success) {
+      toast.success(res.message)
+      oldPassword.value = ''
+      newPassword.value = ''
+      confirmPassword.value = ''
+    } else {
+      toast.error(res.message)
+    }
+  } catch (err: any) {
+    toast.error(err.message || 'Gagal mengubah password')
   }
 }
 
-function handleLogout() {
-  authStore.logout()
+async function handleLogout() {
+  await authStore.logout()
   toast.success('Berhasil keluar dari aplikasi.')
   router.push('/login')
 }

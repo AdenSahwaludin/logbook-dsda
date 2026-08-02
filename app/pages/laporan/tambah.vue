@@ -64,10 +64,10 @@
             v-model="form.lokasiKegiatan" 
             type="text" 
             placeholder="Contoh: Saluran Irigasi Bluru Kidul, Sidoarjo" 
-            class="input-base pl-10" 
+            class="input-base input-has-icon-left" 
             required 
           />
-          <MapPin class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <MapPin class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
       </div>
 
@@ -107,7 +107,7 @@
 
       <!-- Keterangan (Otomatis Readonly per PRD) -->
       <div class="space-y-1.5">
-        <label class="block text-xs font-semibold text-slate-700">Keterangan / Status Status</label>
+        <label class="block text-xs font-semibold text-slate-700">Keterangan / Status</label>
         <input 
           value="Selesai (Menunggu Verifikasi)" 
           type="text" 
@@ -178,7 +178,6 @@ const isConfirmOpen = ref(false)
 const draftRestored = ref(false)
 
 onMounted(() => {
-  // Restore draft if exists
   if (laporanStore.draft) {
     form.value.tanggal = laporanStore.draft.tanggal || todayStr
     form.value.hari = calculateHari(form.value.tanggal)
@@ -190,7 +189,6 @@ onMounted(() => {
   }
 })
 
-// Auto-save draft on input changes (PRD Section 12)
 watch(
   form,
   (newVal) => {
@@ -225,7 +223,6 @@ function discardDraft() {
 }
 
 function openConfirm() {
-  // Validations per PRD Section 10
   if (!form.value.tanggal) {
     toast.error('Tanggal wajib diisi!')
     return
@@ -250,24 +247,29 @@ function openConfirm() {
   isConfirmOpen.value = true
 }
 
-function submitForm() {
+async function submitForm() {
   isConfirmOpen.value = false
   const currentUser = authStore.currentUser
 
-  laporanStore.addLaporan({
-    userId: currentUser?.id || 'usr-pegawai-1',
-    userName: currentUser?.name || 'Ahmad Fauzi, A.Md',
-    userJabatan: currentUser?.jabatan || 'Teknisi Lapangan Irigasi',
-    tanggal: form.value.tanggal,
-    hari: form.value.hari,
-    lokasiKegiatan: form.value.lokasiKegiatan,
-    uraianKegiatan: form.value.uraianKegiatan,
-    outputKegiatan: form.value.outputKegiatan,
-    foto: form.value.foto,
-    keterangan: 'Terverifikasi'
-  })
+  try {
+    await laporanStore.addLaporan({
+      userId: currentUser?.id || 'usr-pegawai-1',
+      userName: currentUser?.name || 'Ahmad Fauzi, A.Md',
+      userJabatan: currentUser?.jabatan || 'Teknisi Lapangan Irigasi',
+      tanggal: form.value.tanggal,
+      hari: form.value.hari,
+      lokasiKegiatan: form.value.lokasiKegiatan,
+      uraianKegiatan: form.value.uraianKegiatan,
+      outputKegiatan: form.value.outputKegiatan,
+      foto: form.value.foto,
+      keterangan: 'Terverifikasi'
+    })
 
-  toast.success('Laporan berhasil disimpan!')
-  router.push('/laporan')
+    toast.success('Laporan berhasil disimpan!')
+    router.push('/laporan')
+  } catch (err: any) {
+    const errorMsg = err.data?.message || err.statusMessage || 'Gagal menyimpan laporan'
+    toast.error(errorMsg)
+  }
 }
 </script>
