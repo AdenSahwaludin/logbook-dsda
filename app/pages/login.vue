@@ -1,5 +1,7 @@
 <template>
   <div class="min-h-screen bg-slate-100 flex items-center justify-center p-4 sm:p-6">
+    <ToastContainer />
+
     <div class="card-base w-full max-w-md p-6 sm:p-8 space-y-6 shadow-xl">
       <!-- Header / Logo -->
       <div class="text-center space-y-2">
@@ -48,36 +50,13 @@
 
         <button 
           type="submit" 
-          class="btn-primary w-full shadow-md shadow-blue-500/20 flex items-center justify-center gap-2"
+          class="btn-primary w-full shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 cursor-pointer"
           :disabled="isLoading"
         >
           <Loader2 v-if="isLoading" class="w-4 h-4 animate-spin" />
-          <span>{{ isLoading ? 'Memverifikasi ke Database...' : 'Masuk ke Aplikasi' }}</span>
+          <span>{{ isLoading ? 'Memverifikasi...' : 'Masuk ke Aplikasi' }}</span>
         </button>
       </form>
-
-      <!-- Real DB Credentials Hint & Quick Fill -->
-      <div class="border-t border-slate-200 pt-5 space-y-3">
-        <p class="text-center text-xs font-semibold text-slate-500">Akun Database (Turso SQLite):</p>
-        <div class="grid grid-cols-2 gap-3">
-          <button 
-            type="button" 
-            @click="fillCredentials('karnadi', 'karnadi')"
-            class="btn-secondary text-xs py-2.5 px-3 border-blue-200 bg-blue-50/50 hover:bg-blue-100 text-blue-800 flex flex-col items-center"
-          >
-            <span class="font-bold">Pegawai (Karnadi)</span>
-            <span class="text-[10px] text-blue-600">karnadi / karnadi</span>
-          </button>
-          <button 
-            type="button" 
-            @click="fillCredentials('adensah', 'adensah')"
-            class="btn-secondary text-xs py-2.5 px-3 border-purple-200 bg-purple-50/50 hover:bg-purple-100 text-purple-800 flex flex-col items-center"
-          >
-            <span class="font-bold">Admin (AdenSah)</span>
-            <span class="text-[10px] text-purple-600">adensah / adensah</span>
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -87,6 +66,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
 import { useToast } from '~/composables/useToast'
+import ToastContainer from '~/components/common/ToastContainer.vue'
 import { User, Lock, Eye, EyeOff, Loader2 } from 'lucide-vue-next'
 
 definePageMeta({
@@ -115,19 +95,15 @@ async function handleLogin() {
     const res = await authStore.login(form.value.username, form.value.password)
     isLoading.value = false
     if (res.success) {
-      toast.success(res.message)
+      toast.success(res.message || 'Login berhasil!')
       router.push('/')
     } else {
-      toast.error(res.message)
+      toast.error(res.message || 'Username atau password salah!')
     }
   } catch (err: any) {
     isLoading.value = false
-    toast.error('Gagal terhubung ke database server.')
+    const errMsg = err.data?.message || err.statusMessage || 'Gagal terhubung ke server database.'
+    toast.error(errMsg)
   }
-}
-
-function fillCredentials(user: string, pass: string) {
-  form.value.username = user
-  form.value.password = pass
 }
 </script>

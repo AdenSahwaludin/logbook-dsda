@@ -26,3 +26,7 @@ logs
 #dokumen
 dokumen
 /dokumen
+
+#.vscode
+.vscode
+/.vscode

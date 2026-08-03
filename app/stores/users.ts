@@ -7,7 +7,6 @@ export const useUsersStore = defineStore('users', () => {
 
   async function initUsers() {
     const authStore = useAuthStore()
-    // Only attempt to fetch all users if the logged in account is an Admin
     if (!authStore.isAdmin) {
       usersList.value = []
       return
@@ -21,7 +20,7 @@ export const useUsersStore = defineStore('users', () => {
           return
         }
       } catch (err) {
-        // Silent catch for non-admin or connection issues
+        // Fallback to local
       }
 
       const saved = localStorage.getItem('dsda_users_list')
@@ -48,9 +47,9 @@ export const useUsersStore = defineStore('users', () => {
     }
   }
 
-  async function addUser(user: Omit<UserProfile, 'id'>) {
+  async function addUser(user: Omit<UserProfile, 'id'>): Promise<{ success: boolean; message: string }> {
     try {
-      const res = await $fetch<{ success: boolean; data: any }>('/api/users', {
+      const res = await $fetch<{ success: boolean; message?: string; data: any }>('/api/users', {
         method: 'POST',
         body: {
           username: user.username,
@@ -65,26 +64,18 @@ export const useUsersStore = defineStore('users', () => {
       if (res.success && res.data) {
         const created = formatUser(res.data)
         usersList.value.push(created)
-        return created
+        return { success: true, message: res.message || 'Pegawai baru berhasil ditambahkan!' }
       }
-    } catch (err) {
-      // Local fallback
+      return { success: false, message: res.message || 'Gagal menambahkan pegawai' }
+    } catch (err: any) {
+      const errMsg = err.data?.message || err.statusMessage || 'Gagal menambahkan data pegawai baru'
+      return { success: false, message: errMsg }
     }
-
-    const newUser: UserProfile = {
-      ...user,
-      id: `usr-${Date.now()}`
-    }
-    usersList.value.push(newUser)
-    if (import.meta.client) {
-      localStorage.setItem('dsda_users_list', JSON.stringify(usersList.value))
-    }
-    return newUser
   }
 
-  async function updateUser(id: string, updated: Partial<UserProfile>) {
+  async function updateUser(id: string, updated: Partial<UserProfile>): Promise<{ success: boolean; message: string }> {
     try {
-      await $fetch(`/api/users/${id}`, {
+      const res = await $fetch<{ success: boolean; message?: string }>(`/api/users/${id}`, {
         method: 'PUT',
         body: {
           username: updated.username,
@@ -96,37 +87,30 @@ export const useUsersStore = defineStore('users', () => {
           district: updated.kabupaten
         }
       })
-    } catch (err) {
-      // Local fallback
-    }
 
-    const idx = usersList.value.findIndex(u => u.id === id)
-    if (idx !== -1) {
-      usersList.value[idx] = { ...usersList.value[idx], ...updated }
-      if (import.meta.client) {
-        localStorage.setItem('dsda_users_list', JSON.stringify(usersList.value))
+      const idx = usersList.value.findIndex(u => u.id === id)
+      if (idx !== -1) {
+        usersList.value[idx] = { ...usersList.value[idx], ...updated }
       }
-      return true
+      return { success: true, message: res.message || 'Data pegawai berhasil diperbarui!' }
+    } catch (err: any) {
+      const errMsg = err.data?.message || err.statusMessage || 'Gagal memperbarui data pegawai'
+      return { success: false, message: errMsg }
     }
-    return false
   }
 
-  async function deleteUser(id: string) {
+  async function deleteUser(id: string): Promise<{ success: boolean; message: string }> {
     try {
-      await $fetch(`/api/users/${id}`, { method: 'DELETE' })
-    } catch (err) {
-      // Local fallback
-    }
-
-    const idx = usersList.value.findIndex(u => u.id === id)
-    if (idx !== -1) {
-      usersList.value.splice(idx, 1)
-      if (import.meta.client) {
-        localStorage.setItem('dsda_users_list', JSON.stringify(usersList.value))
+      const res = await $fetch<{ success: boolean; message?: string }>(`/api/users/${id}`, { method: 'DELETE' })
+      const idx = usersList.value.findIndex(u => u.id === id)
+      if (idx !== -1) {
+        usersList.value.splice(idx, 1)
       }
-      return true
+      return { success: true, message: res.message || 'Data pegawai berhasil dihapus!' }
+    } catch (err: any) {
+      const errMsg = err.data?.message || err.statusMessage || 'Gagal menghapus data pegawai'
+      return { success: false, message: errMsg }
     }
-    return false
   }
 
   return {

@@ -226,14 +226,32 @@ function openEditModal(u: UserProfile) {
 }
 
 async function saveUser() {
-  if (editingUserId.value) {
-    await usersStore.updateUser(editingUserId.value, userForm.value)
-    toast.success('Data pegawai berhasil diperbarui!')
-  } else {
-    await usersStore.addUser(userForm.value)
-    toast.success('Pegawai baru berhasil ditambahkan!')
+  if (!userForm.value.username.trim()) {
+    toast.error('Username wajib diisi!')
+    return
   }
-  isModalOpen.value = false
+  if (!userForm.value.name.trim()) {
+    toast.error('Nama lengkap wajib diisi!')
+    return
+  }
+
+  if (editingUserId.value) {
+    const res = await usersStore.updateUser(editingUserId.value, userForm.value)
+    if (res.success) {
+      toast.success(res.message)
+      isModalOpen.value = false
+    } else {
+      toast.error(res.message)
+    }
+  } else {
+    const res = await usersStore.addUser(userForm.value)
+    if (res.success) {
+      toast.success(res.message)
+      isModalOpen.value = false
+    } else {
+      toast.error(res.message)
+    }
+  }
 }
 
 function openDeleteConfirm(id: string) {
@@ -243,8 +261,12 @@ function openDeleteConfirm(id: string) {
 
 async function handleDelete() {
   if (targetDeleteId.value) {
-    await usersStore.deleteUser(targetDeleteId.value)
-    toast.success('Data pegawai berhasil dihapus!')
+    const res = await usersStore.deleteUser(targetDeleteId.value)
+    if (res.success) {
+      toast.success(res.message)
+    } else {
+      toast.error(res.message)
+    }
   }
   isConfirmOpen.value = false
   targetDeleteId.value = null
