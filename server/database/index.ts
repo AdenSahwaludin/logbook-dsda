@@ -81,43 +81,41 @@ export async function initDb() {
     `)
 
     try {
-      const existingUsers = await db.select().from(schema.users).limit(1)
-      if (existingUsers.length === 0) {
-        const adminPassHash = await bcrypt.hash('admin123', 10)
-        const userPassHash = await bcrypt.hash('user123', 10)
-        const now = new Date().toISOString()
+      const now = new Date().toISOString()
+      const adensahPassHash = await bcrypt.hash('adensah', 10)
+      const karnadiPassHash = await bcrypt.hash('karnadi', 10)
 
-        await db.insert(schema.users).values([
-          {
-            id: 'usr-admin-1',
-            username: 'admin',
-            password: adminPassHash,
-            name: 'Ir. Hendra Wijaya, M.T.',
-            position: 'Kepala Sub Bagian TU & Operasional',
-            section: 'Seksi Pengelolaan Sumber Daya Air',
-            workLocation: 'Kantor Dinas SDA Utama',
-            district: 'Surabaya',
-            role: 'admin',
-            status: 'active',
-            createdAt: now,
-            updatedAt: now
-          },
-          {
-            id: 'usr-pegawai-1',
-            username: 'pegawai',
-            password: userPassHash,
-            name: 'Ahmad Fauzi, A.Md',
-            position: 'Teknisi Lapangan Irigasi',
-            section: 'Seksi Pemeliharaan Jaringan Irigasi',
-            workLocation: 'UPTD Sumber Daya Air Wilayah II',
-            district: 'Sidoarjo',
-            role: 'user',
-            status: 'active',
-            createdAt: now,
-            updatedAt: now
-          }
-        ]).onConflictDoNothing()
-      }
+      // Ensure adensah (Admin) and karnadi (Pegawai) accounts exist
+      await db.insert(schema.users).values([
+        {
+          id: 'usr-adensah-1',
+          username: 'adensah',
+          password: adensahPassHash,
+          name: 'Aden Sahwaludin',
+          position: 'Kepala Sub Bagian TU & Operasional',
+          section: 'Seksi Pengelolaan Sumber Daya Air',
+          workLocation: 'Kantor Dinas SDA Utama',
+          district: 'Surabaya',
+          role: 'admin',
+          status: 'active',
+          createdAt: now,
+          updatedAt: now
+        },
+        {
+          id: 'usr-karnadi-1',
+          username: 'karnadi',
+          password: karnadiPassHash,
+          name: 'Karnadi',
+          position: 'Teknisi Lapangan Irigasi',
+          section: 'Seksi Pemeliharaan Jaringan Irigasi',
+          workLocation: 'UPTD Sumber Daya Air Wilayah II',
+          district: 'Sidoarjo',
+          role: 'user',
+          status: 'active',
+          createdAt: now,
+          updatedAt: now
+        }
+      ]).onConflictDoNothing()
     } catch (seedErr) {
       console.warn('Database seed skipped or already existing:', seedErr)
     }

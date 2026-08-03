@@ -74,24 +74,11 @@
       </div>
     </div>
 
-    <!-- Quick Switcher Footer -->
-    <div class="border-t border-slate-100 pt-4 space-y-3">
-      <div class="p-3 bg-slate-50 rounded-xl space-y-1.5 border border-slate-200/60">
-        <p class="text-xs font-semibold text-slate-700">Mode Role Aktif:</p>
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold text-blue-600 uppercase">{{ authStore.currentUser?.role }}</span>
-          <button 
-            @click="toggleRole" 
-            class="text-[11px] text-slate-600 hover:text-blue-600 font-semibold underline cursor-pointer"
-          >
-            Ganti ke {{ authStore.isAdmin ? 'User' : 'Admin' }}
-          </button>
-        </div>
-      </div>
-
+    <!-- Logout Footer -->
+    <div class="border-t border-slate-100 pt-4">
       <button 
         @click="handleLogout"
-        class="w-full flex items-center gap-2 px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-xl transition"
+        class="w-full flex items-center gap-2 px-3 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-xl transition cursor-pointer"
       >
         <LogOut class="w-4 h-4" />
         <span>Keluar Aplikasi</span>
@@ -118,15 +105,9 @@ const authStore = useAuthStore()
 const toast = useToast()
 const router = useRouter()
 
-function toggleRole() {
-  const newRole = authStore.isAdmin ? 'user' : 'admin'
-  authStore.quickLogin(newRole)
-  toast.info(`Beralih ke role ${newRole.toUpperCase()}`)
-}
-
-function handleLogout() {
-  authStore.logout()
-  toast.success('Berhasil logout')
+async function handleLogout() {
+  await authStore.logout()
+  toast.success('Berhasil keluar dari aplikasi.')
   router.push('/login')
 }
 </script>

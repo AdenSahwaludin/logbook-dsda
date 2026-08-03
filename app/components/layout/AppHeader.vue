@@ -3,9 +3,7 @@
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <!-- Left: Logo & Title -->
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow-sm">
-          J
-        </div>
+        <img src="/icon.png" alt="DSDA Logo" class="w-10 h-10 rounded-2xl object-cover shadow-sm border border-slate-100" />
         <div>
           <h1 class="font-bold text-slate-900 text-base sm:text-lg leading-tight flex items-center gap-2">
             Jurnal DSDA
@@ -20,23 +18,13 @@
         </div>
       </div>
 
-      <!-- Right Actions: PWA Install + Profile Dropdown -->
+      <!-- Right Actions: Profile Link -->
       <div class="flex items-center gap-2.5">
-        <!-- Quick Switch Demo Role Button -->
-        <button 
-          @click="toggleRole" 
-          class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition"
-          title="Klik untuk simulasi perpindahan role Admin <-> User"
-        >
-          <Repeat class="w-3.5 h-3.5" />
-          Switch Role ({{ authStore.isAdmin ? 'Admin' : 'Pegawai' }})
-        </button>
-
         <NuxtLink 
           to="/profil"
           class="flex items-center gap-2.5 p-1.5 hover:bg-slate-100 rounded-2xl transition"
         >
-          <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 font-semibold flex items-center justify-center border border-slate-200 text-sm">
+          <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 font-bold flex items-center justify-center border border-blue-100 text-sm">
             {{ authStore.currentUser?.name?.charAt(0) || 'U' }}
           </div>
           <div class="text-left hidden md:block pr-1">
@@ -51,15 +39,6 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
-import { useToast } from '~/composables/useToast'
-import { Repeat } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
-const toast = useToast()
-
-function toggleRole() {
-  const newRole = authStore.isAdmin ? 'user' : 'admin'
-  authStore.quickLogin(newRole)
-  toast.info(`Berhasil beralih ke role ${newRole.toUpperCase()}`)
-}
 </script>

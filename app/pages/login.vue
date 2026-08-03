@@ -3,9 +3,7 @@
     <div class="card-base w-full max-w-md p-6 sm:p-8 space-y-6 shadow-xl">
       <!-- Header / Logo -->
       <div class="text-center space-y-2">
-        <div class="w-16 h-16 rounded-3xl bg-blue-600 text-white font-bold text-2xl flex items-center justify-center mx-auto shadow-md shadow-blue-500/20">
-          DSDA
-        </div>
+        <img src="/icon.png" alt="DSDA Logo" class="w-16 h-16 rounded-3xl object-cover mx-auto shadow-md shadow-blue-500/20" />
         <h1 class="text-xl font-bold text-slate-900">Sistem Jurnal Harian</h1>
         <p class="text-xs text-slate-500">Dinas Sumber Daya Air (PWA)</p>
       </div>
@@ -60,23 +58,23 @@
 
       <!-- Real DB Credentials Hint & Quick Fill -->
       <div class="border-t border-slate-200 pt-5 space-y-3">
-        <p class="text-center text-xs font-semibold text-slate-500">Akun Database System (Turso):</p>
+        <p class="text-center text-xs font-semibold text-slate-500">Akun Database (Turso SQLite):</p>
         <div class="grid grid-cols-2 gap-3">
           <button 
             type="button" 
-            @click="fillCredentials('pegawai', 'user123')"
+            @click="fillCredentials('karnadi', 'karnadi')"
             class="btn-secondary text-xs py-2.5 px-3 border-blue-200 bg-blue-50/50 hover:bg-blue-100 text-blue-800 flex flex-col items-center"
           >
-            <span class="font-bold">Pegawai (User)</span>
-            <span class="text-[10px] text-blue-600">pegawai / user123</span>
+            <span class="font-bold">Pegawai (Karnadi)</span>
+            <span class="text-[10px] text-blue-600">karnadi / karnadi</span>
           </button>
           <button 
             type="button" 
-            @click="fillCredentials('admin', 'admin123')"
+            @click="fillCredentials('adensah', 'adensah')"
             class="btn-secondary text-xs py-2.5 px-3 border-purple-200 bg-purple-50/50 hover:bg-purple-100 text-purple-800 flex flex-col items-center"
           >
-            <span class="font-bold">Admin Utama</span>
-            <span class="text-[10px] text-purple-600">admin / admin123</span>
+            <span class="font-bold">Admin (AdenSah)</span>
+            <span class="text-[10px] text-purple-600">adensah / adensah</span>
           </button>
         </div>
       </div>

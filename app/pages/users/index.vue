@@ -113,7 +113,7 @@
 
             <div class="space-y-1">
               <label class="block text-xs font-semibold text-slate-700">Nama Lengkap & Gelar *</label>
-              <input v-model="userForm.name" type="text" class="input-base" placeholder="Contoh: Ahmad Fauzi, A.Md" required />
+              <input v-model="userForm.name" type="text" class="input-base" placeholder="Contoh: Karnadi, A.Md" required />
             </div>
 
             <div class="space-y-1">
@@ -190,10 +190,10 @@ const filteredUsers = computed(() => {
   if (!searchQuery.value.trim()) return usersStore.usersList
   const q = searchQuery.value.toLowerCase().trim()
   return usersStore.usersList.filter(u => 
-    u.name.toLowerCase().includes(q) ||
-    u.username.toLowerCase().includes(q) ||
-    u.jabatan.toLowerCase().includes(q) ||
-    u.seksi.toLowerCase().includes(q)
+    (u.name || '').toLowerCase().includes(q) ||
+    (u.username || '').toLowerCase().includes(q) ||
+    (u.jabatan || '').toLowerCase().includes(q) ||
+    (u.seksi || '').toLowerCase().includes(q)
   )
 })
 

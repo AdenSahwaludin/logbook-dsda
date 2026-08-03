@@ -8,5 +8,12 @@
 </template>
 
 <script setup lang="ts">
-// Main root application wrapper
+import { useHead } from '#imports'
+
+useHead({
+  title: 'Logbook DSDA',
+  link: [
+    { rel: 'icon', type: 'image/png', href: '/icon.png' }
+  ]
+})
 </script>

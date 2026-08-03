@@ -22,8 +22,8 @@ export default defineNuxtConfig({
   pwa: {
     registerType: 'autoUpdate',
     manifest: {
-      name: 'Sistem Jurnal Kegiatan Harian',
-      short_name: 'Jurnal Harian',
+      name: 'Logbook DSDA',
+      short_name: 'Logbook DSDA',
       description: 'Aplikasi PWA Laporan Jurnal Kegiatan Harian Pegawai',
       theme_color: '#2563EB',
       background_color: '#F8FAFC',
@@ -52,13 +52,16 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Jurnal Kegiatan Harian - DSDA',
+      title: 'Logbook DSDA',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' },
         { name: 'theme-color', content: '#2563EB' },
         { name: 'description', content: 'Aplikasi Laporan Jurnal Kegiatan Harian Pegawai berbasis PWA' }
       ],
       link: [
+        { rel: 'icon', type: 'image/png', href: '/icon.png' },
+        { rel: 'shortcut icon', href: '/icon.png' },
+        { rel: 'apple-touch-icon', href: '/icon.png' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap' }
