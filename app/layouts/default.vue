@@ -10,8 +10,8 @@
       <!-- Desktop Sidebar -->
       <AppSidebar />
 
-      <!-- Content Area -->
-      <main class="flex-1 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8 max-w-full overflow-x-hidden">
+      <!-- Content Area with Generous Bottom Padding for Mobile Nav Bar -->
+      <main class="flex-1 p-4 sm:p-6 lg:p-8 pb-36 lg:pb-10 max-w-full overflow-x-hidden">
         <slot />
       </main>
     </div>
@@ -35,8 +35,8 @@ const authStore = useAuthStore()
 const laporanStore = useLaporanStore()
 const usersStore = useUsersStore()
 
-onMounted(() => {
-  authStore.initAuth()
+onMounted(async () => {
+  await authStore.initAuth()
   laporanStore.initLaporan()
   usersStore.initUsers()
 })

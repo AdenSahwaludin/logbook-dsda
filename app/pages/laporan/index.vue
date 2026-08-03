@@ -15,7 +15,7 @@
       </NuxtLink>
     </div>
 
-    <!-- Filters & Search Bar Card (PRD Section 19) -->
+    <!-- Filters & Search Bar Card -->
     <div class="card-base p-4 sm:p-5 space-y-4">
       <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
         <!-- Search Input -->
@@ -53,7 +53,7 @@
     <SkeletonLoader v-if="!isLoaded" type="list" :count="4" />
 
     <template v-else>
-      <!-- Empty State (PRD Section 15) -->
+      <!-- Empty State -->
       <div v-if="paginatedLaporan.length === 0" class="card-base p-12 text-center space-y-4">
         <div class="w-16 h-16 rounded-3xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
           <FileX class="w-8 h-8" />
@@ -78,16 +78,16 @@
           class="card-base p-4 sm:p-5 hover:border-blue-300 transition group flex flex-col md:flex-row md:items-center justify-between gap-4"
         >
           <!-- Left Main Content -->
-          <div class="space-y-2 flex-1 cursor-pointer" @click="$router.push(`/laporan/${item.id}`)">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg">
-                {{ item.hari }}, {{ formatDate(item.tanggal) }}
+          <div class="space-y-2 flex-1 min-w-0 cursor-pointer" @click="$router.push(`/laporan/${item.id}`)">
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg">
+                {{ formatIndonesianDate(item.tanggal, item.hari) }}
               </span>
               <span v-if="authStore.isAdmin" class="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-lg">
                 {{ item.userName }}
               </span>
-              <span class="text-xs text-slate-500 flex items-center gap-1">
-                <MapPin class="w-3.5 h-3.5 text-slate-400" />
+              <span class="text-xs text-slate-500 flex items-center gap-1 font-medium truncate">
+                <MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 {{ item.lokasiKegiatan }}
               </span>
             </div>
@@ -97,12 +97,12 @@
             </h3>
 
             <p class="text-xs text-slate-600 line-clamp-1">
-              <strong class="text-slate-700">Output:</strong> {{ item.outputKegiatan }}
+              <strong class="font-semibold text-slate-700">Output:</strong> {{ item.outputKegiatan }}
             </p>
           </div>
 
           <!-- Right Content: Image Thumbnail & Actions -->
-          <div class="flex items-center justify-between md:justify-end gap-3 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100">
+          <div class="flex items-center justify-between md:justify-end gap-3 border-t md:border-t-0 pt-3 md:pt-0 border-slate-100 shrink-0">
             <img 
               v-if="item.foto" 
               :src="item.foto" 
@@ -112,7 +112,7 @@
             />
 
             <!-- Action Buttons -->
-            <div class="flex items-center gap-1.5">
+            <div class="flex items-center gap-1">
               <NuxtLink 
                 :to="`/laporan/${item.id}`" 
                 class="p-2 hover:bg-slate-100 text-slate-600 rounded-xl transition"
@@ -171,7 +171,7 @@
       </div>
     </template>
 
-    <!-- Confirm Delete Modal (PRD Section 17) -->
+    <!-- Confirm Delete Modal -->
     <ConfirmModal 
       :is-open="isConfirmOpen"
       title="Yakin ingin menghapus laporan?"
@@ -250,10 +250,16 @@ watch([searchQuery, filterMonth, filterYear], () => {
   currentPage.value = 1
 })
 
-function formatDate(dateStr: string) {
+function formatIndonesianDate(dateStr: string, dayName?: string) {
   if (!dateStr) return ''
-  const [y, m, d] = dateStr.split('-')
-  return `${d}/${m}/${y}`
+  const parts = dateStr.split('-')
+  if (parts.length !== 3) return dateStr
+  const [y, m, d] = parts
+  const MONTHS = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+  const monthIdx = parseInt(m, 10) - 1
+  const monthName = MONTHS[monthIdx] || m
+  const formatted = `${d} ${monthName} ${y}`
+  return dayName ? `${dayName}, ${formatted}` : formatted
 }
 
 function openDeleteConfirm(id: string) {

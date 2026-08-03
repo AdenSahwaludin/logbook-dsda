@@ -102,28 +102,28 @@
             <div 
               v-for="item in userRecentLaporan" 
               :key="item.id"
-              class="card-base p-4 sm:p-5 hover:border-blue-300 transition cursor-pointer flex flex-col sm:flex-row gap-4 justify-between"
+              class="card-base p-4 sm:p-5 hover:border-blue-300 transition cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               @click="$router.push(`/laporan/${item.id}`)"
             >
-              <div class="space-y-2 flex-1">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg">
-                    {{ item.hari }}, {{ item.tanggal }}
+              <div class="space-y-2 flex-1 min-w-0">
+                <div class="flex items-center gap-2.5 flex-wrap">
+                  <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg">
+                    {{ formatIndonesianDate(item.tanggal, item.hari) }}
                   </span>
-                  <span class="text-xs text-slate-500 flex items-center gap-1">
-                    <MapPin class="w-3.5 h-3.5 text-slate-400" />
+                  <span class="text-xs text-slate-500 flex items-center gap-1 font-medium truncate">
+                    <MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" />
                     {{ item.lokasiKegiatan }}
                   </span>
                 </div>
-                <p class="text-sm font-semibold text-slate-900 line-clamp-2">{{ item.uraianKegiatan }}</p>
-                <p class="text-xs text-slate-600 line-clamp-1"><strong class="text-slate-700">Output:</strong> {{ item.outputKegiatan }}</p>
+                <h4 class="text-sm font-bold text-slate-900 line-clamp-2 leading-snug">{{ item.uraianKegiatan }}</h4>
+                <p class="text-xs text-slate-600 line-clamp-1"><strong class="font-semibold text-slate-700">Output:</strong> {{ item.outputKegiatan }}</p>
               </div>
 
-              <div class="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
-                <img v-if="item.foto" :src="item.foto" class="w-16 h-16 rounded-xl object-cover border border-slate-200" />
-                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  {{ item.keterangan }}
+              <div class="flex items-center justify-between sm:justify-end gap-3 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100 shrink-0">
+                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                  {{ item.keterangan || 'Terverifikasi' }}
                 </span>
+                <img v-if="item.foto" :src="item.foto" class="w-14 h-14 rounded-xl object-cover border border-slate-200 shrink-0" />
               </div>
             </div>
           </div>
@@ -171,7 +171,7 @@
           </div>
         </div>
 
-        <!-- Shortcuts Panel (PRD Section 9) -->
+        <!-- Shortcuts Panel -->
         <div class="card-base p-6 space-y-4">
           <h3 class="text-base font-bold text-slate-900">Shortcut Pintas Admin</h3>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -229,28 +229,31 @@
             <div 
               v-for="item in laporanStore.laporanList.slice(0, 5)" 
               :key="item.id"
-              class="card-base p-4 sm:p-5 hover:border-blue-300 transition cursor-pointer flex flex-col sm:flex-row gap-4 justify-between"
+              class="card-base p-4 sm:p-5 hover:border-blue-300 transition cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               @click="$router.push(`/laporan/${item.id}`)"
             >
-              <div class="space-y-2 flex-1">
-                <div class="flex items-center gap-2 flex-wrap">
+              <div class="space-y-2 flex-1 min-w-0">
+                <div class="flex items-center gap-2.5 flex-wrap">
                   <span class="text-xs font-bold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-lg">
                     {{ item.userName }} ({{ item.userJabatan }})
                   </span>
-                  <span class="text-xs text-slate-500">{{ item.hari }}, {{ item.tanggal }}</span>
+                  <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg">
+                    {{ formatIndonesianDate(item.tanggal, item.hari) }}
+                  </span>
+                  <span class="text-xs text-slate-500 flex items-center gap-1 font-medium truncate">
+                    <MapPin class="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    {{ item.lokasiKegiatan }}
+                  </span>
                 </div>
-                <p class="text-sm font-semibold text-slate-900 line-clamp-2">{{ item.uraianKegiatan }}</p>
-                <p class="text-xs text-slate-500 flex items-center gap-1">
-                  <MapPin class="w-3.5 h-3.5 text-slate-400" />
-                  {{ item.lokasiKegiatan }}
-                </p>
+                <h4 class="text-sm font-bold text-slate-900 line-clamp-2 leading-snug">{{ item.uraianKegiatan }}</h4>
+                <p class="text-xs text-slate-600 line-clamp-1"><strong class="font-semibold text-slate-700">Output:</strong> {{ item.outputKegiatan }}</p>
               </div>
 
-              <div class="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
-                <img v-if="item.foto" :src="item.foto" class="w-16 h-16 rounded-xl object-cover border border-slate-200" />
-                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700">
-                  {{ item.keterangan }}
+              <div class="flex items-center justify-between sm:justify-end gap-3 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100 shrink-0">
+                <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200/80">
+                  {{ item.keterangan || 'Terverifikasi' }}
                 </span>
+                <img v-if="item.foto" :src="item.foto" class="w-14 h-14 rounded-xl object-cover border border-slate-200 shrink-0" />
               </div>
             </div>
           </div>
@@ -291,13 +294,25 @@ const isReady = ref(false)
 onMounted(() => {
   setTimeout(() => {
     isReady.value = true
-  }, 300)
+  }, 200)
 })
 
 const currentFormattedDate = computed(() => {
   const options: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
   return new Date().toLocaleDateString('id-ID', options)
 })
+
+function formatIndonesianDate(dateStr: string, dayName?: string) {
+  if (!dateStr) return ''
+  const parts = dateStr.split('-')
+  if (parts.length !== 3) return dateStr
+  const [y, m, d] = parts
+  const MONTHS = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+  const monthIdx = parseInt(m, 10) - 1
+  const monthName = MONTHS[monthIdx] || m
+  const formatted = `${d} ${monthName} ${y}`
+  return dayName ? `${dayName}, ${formatted}` : formatted
+}
 
 const todayStr = computed(() => new Date().toISOString().split('T')[0])
 const currentMonth = computed(() => new Date().getMonth() + 1)
