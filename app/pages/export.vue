@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Export Laporan Jurnal Harian</h2>
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Export Laporan Bulanan</h2>
         <p class="text-xs sm:text-sm text-slate-500">Cetak rekapitulasi bulanan kegiatan pegawai ke format PDF atau MS Word</p>
       </div>
 
@@ -82,7 +82,7 @@
           class="btn-primary py-3 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 cursor-pointer"
         >
           <FileSpreadsheet class="w-5 h-5" />
-          <span>{{ isGeneratingWord ? 'Membuat Word...' : 'Download Word (.docx)' }}</span>
+          <span>{{ isGeneratingWord ? 'Membuat Word (.docx)' : 'Download Word (.docx)' }}</span>
         </button>
       </div>
     </div>
@@ -124,6 +124,16 @@ const matchingLaporan = computed(() => {
 
 const monthName = computed(() => BULAN_LIST[selectedMonth.value - 1])
 
+const getExportFileName = (ext: string) => {
+  let targetName = 'Rekap'
+  if (selectedUserId.value) {
+    const u = usersStore.usersList.find(user => user.id === selectedUserId.value)
+    if (u?.name) targetName = u.name
+  }
+  const cleanName = targetName.replace(/[^a-zA-Z0-9]/g, '_')
+  return `${cleanName}_Laporan_Bulanan_${monthName.value}_${selectedYear.value}.${ext}`
+}
+
 async function generatePDF() {
   isGeneratingPDF.value = true
   toast.info('Sedang menyusun dokumen PDF...')
@@ -141,7 +151,7 @@ async function generatePDF() {
       responseType: 'blob'
     })
 
-    const fileName = `Jurnal_DSDA_${monthName.value}_${selectedYear.value}.pdf`
+    const fileName = getExportFileName('pdf')
     saveAs(blob, fileName)
     toast.success(`PDF Berhasil di-download (${fileName})`)
   } catch (err: any) {
@@ -169,7 +179,7 @@ async function generateWord() {
       responseType: 'blob'
     })
 
-    const fileName = `Jurnal_DSDA_${monthName.value}_${selectedYear.value}.docx`
+    const fileName = getExportFileName('docx')
     saveAs(blob, fileName)
     toast.success(`Dokumen Word berhasil di-download (${fileName})`)
   } catch (err: any) {

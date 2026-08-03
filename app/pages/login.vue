@@ -1,13 +1,13 @@
 <template>
-  <div class="min-h-screen bg-slate-100 flex items-center justify-center p-4 sm:p-6">
+  <div class="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-6">
     <ToastContainer />
 
-    <div class="card-base w-full max-w-md p-6 sm:p-8 space-y-6 shadow-xl">
+    <div class="card-base w-full max-w-md p-6 sm:p-8 space-y-6 shadow-xl border border-slate-200/80">
       <!-- Header / Logo -->
       <div class="text-center space-y-2">
-        <img src="/icon.png" alt="DSDA Logo" class="w-16 h-16 rounded-3xl object-cover mx-auto shadow-md shadow-blue-500/20" />
-        <h1 class="text-xl font-bold text-slate-900">Sistem Jurnal Harian</h1>
-        <p class="text-xs text-slate-500">Dinas Sumber Daya Air (PWA)</p>
+        <img src="/icon.png" alt="Logo" class="w-16 h-16 rounded-3xl object-cover mx-auto shadow-md shadow-blue-500/20" />
+        <h1 class="text-xl font-bold text-slate-900">Logbook Bulanan</h1>
+        <p class="text-xs text-slate-500">Sistem Laporan & Presensi Harian</p>
       </div>
 
       <!-- Login Form -->
@@ -50,7 +50,7 @@
 
         <button 
           type="submit" 
-          class="btn-primary w-full shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 cursor-pointer"
+          class="btn-primary w-full shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 cursor-pointer py-3"
           :disabled="isLoading"
         >
           <Loader2 v-if="isLoading" class="w-4 h-4 animate-spin" />

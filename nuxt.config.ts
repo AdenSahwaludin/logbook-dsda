@@ -22,9 +22,9 @@ export default defineNuxtConfig({
   pwa: {
     registerType: 'autoUpdate',
     manifest: {
-      name: 'Logbook DSDA',
-      short_name: 'Logbook DSDA',
-      description: 'Aplikasi PWA Laporan Jurnal Kegiatan Harian Pegawai',
+      name: 'Logbook Bulanan',
+      short_name: 'Logbook Bulanan',
+      description: 'Aplikasi PWA Laporan Presensi & Logbook Kegiatan Harian Pegawai',
       theme_color: '#FFFFFF',
       background_color: '#FFFFFF',
       display: 'standalone',
@@ -44,7 +44,8 @@ export default defineNuxtConfig({
     },
     workbox: {
       maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-      globPatterns: ['**/*.{js,css,html,png,svg,ico}']
+      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+      navigateFallback: null
     },
     client: {
       installPrompt: true
@@ -56,11 +57,11 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Logbook DSDA',
+      title: 'Logbook Bulanan',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' },
         { name: 'theme-color', content: '#FFFFFF' },
-        { name: 'description', content: 'Aplikasi Laporan Jurnal Kegiatan Harian Pegawai berbasis PWA' }
+        { name: 'description', content: 'Aplikasi Laporan Presensi & Logbook Kegiatan Harian Pegawai' }
       ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/icon.png' },

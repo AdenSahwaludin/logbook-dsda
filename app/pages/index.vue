@@ -4,63 +4,30 @@
     <SkeletonLoader v-if="!isReady" type="card" :count="3" />
 
     <template v-else>
-      <!-- Premium Redesigned Welcome Banner -->
-      <div class="card-base p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-slate-800 to-blue-950 text-white border-0 shadow-xl relative overflow-hidden rounded-3xl">
-        <div class="relative z-10 space-y-3">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/10 backdrop-blur-md border border-white/15 rounded-full text-xs font-semibold text-slate-200">
-            <Calendar class="w-3.5 h-3.5 text-blue-400" />
-            <span>{{ currentFormattedDate }}</span>
-          </div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-            Halo, {{ authStore.currentUser?.name }} 👋
-          </h2>
-          <p class="text-slate-300 text-sm max-w-xl leading-relaxed">
-            {{ authStore.isAdmin ? 'Dashboard Rekapitulasi & Pengelolaan Jurnal Dinas Sumber Daya Air' : 'Pencatatan Jurnal Kegiatan Harian Pegawai Lapangan' }}
-          </p>
-        </div>
-        <!-- Decorative Ambient Glows -->
-        <div class="absolute -right-12 -bottom-12 w-56 h-56 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute right-1/4 -top-12 w-40 h-40 bg-indigo-500/15 rounded-full blur-2xl pointer-events-none"></div>
-      </div>
-
       <!-- ==================== USER DASHBOARD VIEW ==================== -->
       <div v-if="!authStore.isAdmin" class="space-y-6">
-        <!-- Stat Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Card 1: Total Laporan Bulan Ini -->
-          <div class="card-base p-5 flex items-center justify-between border border-slate-200/80 hover:border-blue-300 transition">
-            <div class="space-y-1">
-              <p class="text-xs font-semibold text-slate-500">Laporan Bulan Ini</p>
-              <h3 class="text-3xl font-bold text-slate-900">{{ userLaporanBulanIniCount }} <span class="text-sm font-normal text-slate-500">laporan</span></h3>
-            </div>
-            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
-              <FileCheck class="w-6 h-6" />
+        <!-- Status Hari Ini Card ONLY (Banner & Total Laporan Bulan Ini Removed) -->
+        <div class="card-base p-5 sm:p-6 flex items-center justify-between border border-slate-200/80 shadow-sm">
+          <div class="space-y-1.5">
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Status Presensi Hari Ini</p>
+            <div class="flex items-center gap-2">
+              <span 
+                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold shadow-2xs"
+                :class="hasSubmittedToday ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-amber-100 text-amber-800 border border-amber-200'"
+              >
+                <CheckCircle2 v-if="hasSubmittedToday" class="w-4 h-4" />
+                <Clock v-else class="w-4 h-4" />
+                {{ hasSubmittedToday ? 'Sudah Mengisi' : 'Belum Mengisi' }}
+              </span>
             </div>
           </div>
-
-          <!-- Card 2: Status Laporan Hari Ini -->
-          <div class="card-base p-5 flex items-center justify-between border border-slate-200/80 hover:border-blue-300 transition">
-            <div class="space-y-1">
-              <p class="text-xs font-semibold text-slate-500">Status Hari Ini</p>
-              <div class="flex items-center gap-2">
-                <span 
-                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
-                  :class="hasSubmittedToday ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'"
-                >
-                  <CheckCircle2 v-if="hasSubmittedToday" class="w-3.5 h-3.5" />
-                  <Clock v-else class="w-3.5 h-3.5" />
-                  {{ hasSubmittedToday ? 'Sudah Mengisi' : 'Belum Mengisi' }}
-                </span>
-              </div>
-            </div>
-            <NuxtLink 
-              to="/laporan/tambah" 
-              class="btn-primary text-xs py-2.5 px-3.5 shadow-md shadow-blue-500/20"
-            >
-              <Plus class="w-4 h-4" />
-              Buat Laporan
-            </NuxtLink>
-          </div>
+          <NuxtLink 
+            to="/laporan/tambah" 
+            class="btn-primary text-xs py-2.5 px-4 shadow-md shadow-blue-500/20 flex items-center gap-2"
+          >
+            <Plus class="w-4 h-4" />
+            <span>Buat Laporan</span>
+          </NuxtLink>
         </div>
 
         <!-- Draft Resume Warning Banner if Draft exists -->
@@ -135,6 +102,24 @@
 
       <!-- ==================== ADMIN DASHBOARD VIEW ==================== -->
       <div v-else class="space-y-6">
+        <!-- Welcome Banner Admin -->
+        <div class="card-base p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-slate-800 to-blue-950 text-white border-0 shadow-xl relative overflow-hidden rounded-3xl">
+          <div class="relative z-10 space-y-3">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/10 backdrop-blur-md border border-white/15 rounded-full text-xs font-semibold text-slate-200">
+              <Calendar class="w-3.5 h-3.5 text-blue-400" />
+              <span>{{ currentFormattedDate }}</span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              Halo, {{ authStore.currentUser?.name }} 👋
+            </h2>
+            <p class="text-slate-300 text-sm max-w-xl leading-relaxed">
+              Dashboard Rekapitulasi & Pengelolaan Logbook Bulanan Pegawai
+            </p>
+          </div>
+          <div class="absolute -right-12 -bottom-12 w-56 h-56 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute right-1/4 -top-12 w-40 h-40 bg-indigo-500/15 rounded-full blur-2xl pointer-events-none"></div>
+        </div>
+
         <!-- Admin Summary Stat Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <!-- Total User -->
@@ -274,7 +259,6 @@ import { useUsersStore } from '~/stores/users'
 import SkeletonLoader from '~/components/common/SkeletonLoader.vue'
 import { 
   Calendar, 
-  FileCheck, 
   CheckCircle2, 
   Clock, 
   Plus, 
@@ -297,7 +281,7 @@ const isReady = ref(false)
 onMounted(() => {
   setTimeout(() => {
     isReady.value = true
-  }, 200)
+  }, 150)
 })
 
 const currentFormattedDate = computed(() => {
@@ -317,19 +301,24 @@ function formatIndonesianDate(dateStr: string, dayName?: string) {
   return dayName ? `${dayName}, ${formatted}` : formatted
 }
 
-const todayStr = computed(() => new Date().toISOString().split('T')[0])
+const getTodayLocalDateStr = () => {
+  const d = new Date()
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 const currentMonth = computed(() => new Date().getMonth() + 1)
 const currentYear = computed(() => new Date().getFullYear())
 
-// User Stats
-const userLaporanBulanIniCount = computed(() => {
-  if (!authStore.currentUser) return 0
-  return laporanStore.getLaporanFiltered(authStore.currentUser.id, currentMonth.value, currentYear.value).length
-})
-
+// User Status - Strictly checks current logged in user and local date
 const hasSubmittedToday = computed(() => {
   if (!authStore.currentUser) return false
-  return laporanStore.laporanList.some(l => l.userId === authStore.currentUser?.id && l.tanggal === todayStr.value)
+  const today = getTodayLocalDateStr()
+  return laporanStore.laporanList.some(l => 
+    String(l.userId) === String(authStore.currentUser?.id) && l.tanggal === today
+  )
 })
 
 const userRecentLaporan = computed(() => {
@@ -339,7 +328,8 @@ const userRecentLaporan = computed(() => {
 
 // Admin Stats
 const adminLaporanHariIniCount = computed(() => {
-  return laporanStore.laporanList.filter(l => l.tanggal === todayStr.value).length
+  const today = getTodayLocalDateStr()
+  return laporanStore.laporanList.filter(l => l.tanggal === today).length
 })
 
 const adminLaporanBulanIniCount = computed(() => {
