@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-50 flex flex-col text-slate-900 selection:bg-blue-100 selection:text-blue-700">
+  <div class="min-h-screen bg-white flex flex-col text-slate-900 selection:bg-blue-100 selection:text-blue-700">
     <ToastContainer />
     
     <!-- Top Header -->

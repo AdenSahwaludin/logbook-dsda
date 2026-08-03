@@ -25,8 +25,8 @@ export default defineNuxtConfig({
       name: 'Logbook DSDA',
       short_name: 'Logbook DSDA',
       description: 'Aplikasi PWA Laporan Jurnal Kegiatan Harian Pegawai',
-      theme_color: '#2563EB',
-      background_color: '#F8FAFC',
+      theme_color: '#FFFFFF',
+      background_color: '#FFFFFF',
       display: 'standalone',
       start_url: '/',
       icons: [
@@ -59,7 +59,7 @@ export default defineNuxtConfig({
       title: 'Logbook DSDA',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' },
-        { name: 'theme-color', content: '#2563EB' },
+        { name: 'theme-color', content: '#FFFFFF' },
         { name: 'description', content: 'Aplikasi Laporan Jurnal Kegiatan Harian Pegawai berbasis PWA' }
       ],
       link: [

@@ -4,20 +4,23 @@
     <SkeletonLoader v-if="!isReady" type="card" :count="3" />
 
     <template v-else>
-      <!-- Welcome Banner -->
-      <div class="card-base p-6 bg-gradient-to-r from-blue-600 to-indigo-700 text-white border-0 shadow-lg relative overflow-hidden">
-        <div class="relative z-10 space-y-2">
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold">
-            <Calendar class="w-3.5 h-3.5" />
+      <!-- Premium Redesigned Welcome Banner -->
+      <div class="card-base p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-slate-800 to-blue-950 text-white border-0 shadow-xl relative overflow-hidden rounded-3xl">
+        <div class="relative z-10 space-y-3">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/10 backdrop-blur-md border border-white/15 rounded-full text-xs font-semibold text-slate-200">
+            <Calendar class="w-3.5 h-3.5 text-blue-400" />
             <span>{{ currentFormattedDate }}</span>
           </div>
-          <h2 class="text-2xl sm:text-3xl font-bold">Halo, {{ authStore.currentUser?.name }}</h2>
-          <p class="text-blue-100 text-sm max-w-xl">
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            Halo, {{ authStore.currentUser?.name }} 👋
+          </h2>
+          <p class="text-slate-300 text-sm max-w-xl leading-relaxed">
             {{ authStore.isAdmin ? 'Dashboard Rekapitulasi & Pengelolaan Jurnal Dinas Sumber Daya Air' : 'Pencatatan Jurnal Kegiatan Harian Pegawai Lapangan' }}
           </p>
         </div>
-        <!-- Decorative Circle -->
-        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+        <!-- Decorative Ambient Glows -->
+        <div class="absolute -right-12 -bottom-12 w-56 h-56 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute right-1/4 -top-12 w-40 h-40 bg-indigo-500/15 rounded-full blur-2xl pointer-events-none"></div>
       </div>
 
       <!-- ==================== USER DASHBOARD VIEW ==================== -->
@@ -25,24 +28,24 @@
         <!-- Stat Cards Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <!-- Card 1: Total Laporan Bulan Ini -->
-          <div class="card-base p-5 flex items-center justify-between">
+          <div class="card-base p-5 flex items-center justify-between border border-slate-200/80 hover:border-blue-300 transition">
             <div class="space-y-1">
               <p class="text-xs font-semibold text-slate-500">Laporan Bulan Ini</p>
               <h3 class="text-3xl font-bold text-slate-900">{{ userLaporanBulanIniCount }} <span class="text-sm font-normal text-slate-500">laporan</span></h3>
             </div>
-            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
               <FileCheck class="w-6 h-6" />
             </div>
           </div>
 
           <!-- Card 2: Status Laporan Hari Ini -->
-          <div class="card-base p-5 flex items-center justify-between">
+          <div class="card-base p-5 flex items-center justify-between border border-slate-200/80 hover:border-blue-300 transition">
             <div class="space-y-1">
               <p class="text-xs font-semibold text-slate-500">Status Hari Ini</p>
               <div class="flex items-center gap-2">
                 <span 
                   class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
-                  :class="hasSubmittedToday ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'"
+                  :class="hasSubmittedToday ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'"
                 >
                   <CheckCircle2 v-if="hasSubmittedToday" class="w-3.5 h-3.5" />
                   <Clock v-else class="w-3.5 h-3.5" />
@@ -52,7 +55,7 @@
             </div>
             <NuxtLink 
               to="/laporan/tambah" 
-              class="btn-primary text-xs py-2.5 px-3"
+              class="btn-primary text-xs py-2.5 px-3.5 shadow-md shadow-blue-500/20"
             >
               <Plus class="w-4 h-4" />
               Buat Laporan
@@ -61,7 +64,7 @@
         </div>
 
         <!-- Draft Resume Warning Banner if Draft exists -->
-        <div v-if="laporanStore.draft" class="card-base p-4 bg-amber-50 border-amber-200 flex items-center justify-between gap-3">
+        <div v-if="laporanStore.draft" class="card-base p-4 bg-amber-50/80 border-amber-200 flex items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
               <FileEdit class="w-5 h-5" />
@@ -87,7 +90,7 @@
           </div>
 
           <!-- Empty State -->
-          <div v-if="userRecentLaporan.length === 0" class="card-base p-8 text-center space-y-3">
+          <div v-if="userRecentLaporan.length === 0" class="card-base p-8 text-center space-y-3 border border-slate-200/80">
             <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
               <FileQuestion class="w-8 h-8" />
             </div>
@@ -102,12 +105,12 @@
             <div 
               v-for="item in userRecentLaporan" 
               :key="item.id"
-              class="card-base p-4 sm:p-5 hover:border-blue-300 transition cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              class="card-base p-4 sm:p-5 border border-slate-200/80 hover:border-blue-400 hover:shadow-md transition cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               @click="$router.push(`/laporan/${item.id}`)"
             >
               <div class="space-y-2 flex-1 min-w-0">
                 <div class="flex items-center gap-2.5 flex-wrap">
-                  <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg">
+                  <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100">
                     {{ formatIndonesianDate(item.tanggal, item.hari) }}
                   </span>
                   <span class="text-xs text-slate-500 flex items-center gap-1 font-medium truncate">
@@ -135,10 +138,10 @@
         <!-- Admin Summary Stat Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <!-- Total User -->
-          <div class="card-base p-5 space-y-2">
+          <div class="card-base p-5 space-y-2 border border-slate-200/80">
             <div class="flex items-center justify-between">
               <span class="text-xs font-semibold text-slate-500">Total Pegawai</span>
-              <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+              <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100">
                 <Users class="w-5 h-5" />
               </div>
             </div>
@@ -147,10 +150,10 @@
           </div>
 
           <!-- Total Laporan Hari Ini -->
-          <div class="card-base p-5 space-y-2">
+          <div class="card-base p-5 space-y-2 border border-slate-200/80">
             <div class="flex items-center justify-between">
               <span class="text-xs font-semibold text-slate-500">Laporan Hari Ini</span>
-              <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
                 <CheckSquare class="w-5 h-5" />
               </div>
             </div>
@@ -159,10 +162,10 @@
           </div>
 
           <!-- Total Laporan Bulan Ini -->
-          <div class="card-base p-5 space-y-2">
+          <div class="card-base p-5 space-y-2 border border-slate-200/80">
             <div class="flex items-center justify-between">
               <span class="text-xs font-semibold text-slate-500">Laporan Bulan Ini</span>
-              <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+              <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
                 <FileText class="w-5 h-5" />
               </div>
             </div>
@@ -172,12 +175,12 @@
         </div>
 
         <!-- Shortcuts Panel -->
-        <div class="card-base p-6 space-y-4">
+        <div class="card-base p-6 space-y-4 border border-slate-200/80">
           <h3 class="text-base font-bold text-slate-900">Shortcut Pintas Admin</h3>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <NuxtLink 
               to="/users" 
-              class="p-4 rounded-2xl bg-slate-50 hover:bg-purple-50 border border-slate-200 hover:border-purple-200 transition group flex items-center gap-3"
+              class="p-4 rounded-2xl bg-white hover:bg-purple-50/50 border border-slate-200 hover:border-purple-200 transition group flex items-center gap-3"
             >
               <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center group-hover:scale-105 transition">
                 <Users class="w-5 h-5" />
@@ -190,7 +193,7 @@
 
             <NuxtLink 
               to="/laporan" 
-              class="p-4 rounded-2xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 transition group flex items-center gap-3"
+              class="p-4 rounded-2xl bg-white hover:bg-blue-50/50 border border-slate-200 hover:border-blue-200 transition group flex items-center gap-3"
             >
               <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center group-hover:scale-105 transition">
                 <FileText class="w-5 h-5" />
@@ -203,7 +206,7 @@
 
             <NuxtLink 
               to="/export" 
-              class="p-4 rounded-2xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 transition group flex items-center gap-3"
+              class="p-4 rounded-2xl bg-white hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-200 transition group flex items-center gap-3"
             >
               <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center group-hover:scale-105 transition">
                 <Download class="w-5 h-5" />
@@ -229,7 +232,7 @@
             <div 
               v-for="item in laporanStore.laporanList.slice(0, 5)" 
               :key="item.id"
-              class="card-base p-4 sm:p-5 hover:border-blue-300 transition cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              class="card-base p-4 sm:p-5 border border-slate-200/80 hover:border-blue-400 hover:shadow-md transition cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               @click="$router.push(`/laporan/${item.id}`)"
             >
               <div class="space-y-2 flex-1 min-w-0">
@@ -237,7 +240,7 @@
                   <span class="text-xs font-bold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-lg">
                     {{ item.userName }} ({{ item.userJabatan }})
                   </span>
-                  <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg">
+                  <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100">
                     {{ formatIndonesianDate(item.tanggal, item.hari) }}
                   </span>
                   <span class="text-xs text-slate-500 flex items-center gap-1 font-medium truncate">
