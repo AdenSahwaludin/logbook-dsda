@@ -35,9 +35,10 @@ export const useAuthStore = defineStore('auth', () => {
       }
     }
 
-    // 2. Validate token against backend API
+    // 2. Validate token against backend API (forwarding cookie headers if SSR)
     try {
-      const res = await $fetch<{ success: boolean; data: UserProfile }>('/api/auth/me')
+      const headers = import.meta.server ? useRequestHeaders(['cookie']) as Record<string, string> : undefined
+      const res = await $fetch<{ success: boolean; data: UserProfile }>('/api/auth/me', { headers })
       if (res.success && res.data) {
         currentUser.value = formatUser(res.data)
         if (import.meta.client) {
@@ -45,7 +46,7 @@ export const useAuthStore = defineStore('auth', () => {
         }
       }
     } catch (err) {
-      const token = useCookie('dsda_token')
+      const token = useCookie('auth_token')
       if (!token.value) {
         currentUser.value = null
         if (import.meta.client) {
