@@ -1,4 +1,4 @@
-import { defineNuxtRouteMiddleware, navigateTo } from '#imports'
+import { defineNuxtRouteMiddleware, navigateTo, useCookie } from '#imports'
 import { useAuthStore } from '~/stores/auth'
 
 export default defineNuxtRouteMiddleware(async (to) => {
@@ -9,18 +9,21 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const authStore = useAuthStore()
 
-  // Initialize auth if not already initialized
+  // Initialize auth session
   if (!authStore.isAuthenticated) {
     await authStore.initAuth()
   }
 
-  // If still unauthenticated, redirect immediately to login
-  if (!authStore.isAuthenticated) {
+  // Check token cookie
+  const token = useCookie('dsda_token')
+
+  // Only redirect to login if unauthenticated AND no token cookie exists
+  if (!authStore.isAuthenticated && !token.value) {
     return navigateTo('/login')
   }
 
   // Admin-only page restriction
-  if (to.path.startsWith('/users') && !authStore.isAdmin) {
+  if (to.path.startsWith('/users') && authStore.currentUser && !authStore.isAdmin) {
     return navigateTo('/')
   }
 })

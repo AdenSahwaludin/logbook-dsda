@@ -2,7 +2,7 @@ import { ReportRepository } from '../repositories/reportRepository'
 import { UserRepository } from '../repositories/userRepository'
 import { AuditRepository } from '../repositories/auditRepository'
 import { getIndonesianDayName } from '../utils/date'
-import { uploadToCloudinary } from '../lib/cloudinary'
+import { uploadToCloudinary, deleteFromCloudinary } from '../lib/cloudinary'
 
 export class ReportService {
   static async getReports(role: string, userId: string, queryUserId?: string, month?: number, year?: number) {
@@ -125,7 +125,11 @@ export class ReportService {
     let finalPhotoUrl = data.photoUrl || existing.photoUrl
     let finalPublicId = data.photoPublicId || existing.photoPublicId
 
+    // If new photo uploaded, delete old photo from Cloudinary first
     if (data.photoUrl && data.photoUrl.startsWith('data:image/')) {
+      if (existing.photoPublicId || existing.photoUrl) {
+        await deleteFromCloudinary(existing.photoPublicId || existing.photoUrl)
+      }
       const uploaded = await uploadToCloudinary(data.photoUrl, 'dsda-reports')
       finalPhotoUrl = uploaded.url
       finalPublicId = uploaded.publicId
@@ -158,6 +162,12 @@ export class ReportService {
 
     if (role !== 'admin' && existing.userId !== userId) {
       throw createError({ statusCode: 403, statusMessage: 'Anda tidak diizinkan menghapus laporan ini' })
+    }
+
+    // Delete image asset from Cloudinary storage
+    const targetImage = existing.photoPublicId || existing.photoUrl
+    if (targetImage) {
+      await deleteFromCloudinary(targetImage)
     }
 
     await ReportRepository.softDelete(id)

@@ -23,24 +23,33 @@ export const useAuthStore = defineStore('auth', () => {
   const isAdmin = computed(() => currentUser.value?.role === 'admin')
 
   async function initAuth() {
-    if (import.meta.client) {
-      try {
-        const res = await $fetch<{ success: boolean; data: UserProfile }>('/api/auth/me')
-        if (res.success && res.data) {
-          currentUser.value = formatUser(res.data)
-          localStorage.setItem('dsda_auth_user', JSON.stringify(currentUser.value))
-          return
-        }
-      } catch (err) {
-        // Clear saved user if token invalid
-      }
-
+    // 1. Restore from localStorage instantly on client side
+    if (import.meta.client && !currentUser.value) {
       const saved = localStorage.getItem('dsda_auth_user')
       if (saved) {
         try {
           currentUser.value = JSON.parse(saved)
         } catch {
           currentUser.value = null
+        }
+      }
+    }
+
+    // 2. Validate token against backend API
+    try {
+      const res = await $fetch<{ success: boolean; data: UserProfile }>('/api/auth/me')
+      if (res.success && res.data) {
+        currentUser.value = formatUser(res.data)
+        if (import.meta.client) {
+          localStorage.setItem('dsda_auth_user', JSON.stringify(currentUser.value))
+        }
+      }
+    } catch (err) {
+      const token = useCookie('dsda_token')
+      if (!token.value) {
+        currentUser.value = null
+        if (import.meta.client) {
+          localStorage.removeItem('dsda_auth_user')
         }
       }
     }
