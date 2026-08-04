@@ -7,7 +7,9 @@ export const createReportSchema = z.object({
   location: z.string().min(1, 'Lokasi kegiatan wajib diisi'),
   photoUrl: z.string().min(1, 'Foto dokumentasi wajib diunggah'),
   photoPublicId: z.string().optional(),
-  description: z.string().optional()
+  description: z.string().optional(),
+  status: z.string().optional(),
+  keterangan: z.string().optional()
 })
 
 export const updateReportSchema = createReportSchema.partial()

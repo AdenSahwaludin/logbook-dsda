@@ -5,7 +5,7 @@ import { getIndonesianDayName } from '../utils/date'
 import { uploadToCloudinary, deleteFromCloudinary } from '../lib/cloudinary'
 
 export class ReportService {
-  static async getReports(role: string, userId: string, queryUserId?: string, month?: number, year?: number) {
+  static async getReports(role: string, userId: string, queryUserId?: string, startMonth?: number, endMonth?: number, year?: number) {
     let reportsList = []
     if (role === 'admin') {
       if (queryUserId) {
@@ -29,11 +29,16 @@ export class ReportService {
       }
     })
 
-    if (month || year) {
+    if (startMonth || endMonth || year) {
+      const sM = startMonth ? Number(startMonth) : undefined
+      const eM = endMonth ? Number(endMonth) : sM
       filtered = filtered.filter(item => {
         const itemDate = new Date(item.date)
-        if (month && (itemDate.getMonth() + 1) !== Number(month)) return false
-        if (year && itemDate.getFullYear() !== Number(year)) return false
+        const m = itemDate.getMonth() + 1
+        const y = itemDate.getFullYear()
+        if (year && y !== Number(year)) return false
+        if (sM && m < sM) return false
+        if (eM && m > eM) return false
         return true
       })
     }
@@ -93,7 +98,7 @@ export class ReportService {
       photoUrl: finalPhotoUrl,
       photoPublicId: finalPublicId,
       description: data.description || '',
-      status: 'Terverifikasi',
+      status: data.keterangan || data.status || '',
       createdAt: now,
       updatedAt: now
     })
@@ -135,11 +140,14 @@ export class ReportService {
       finalPublicId = uploaded.publicId
     }
 
+    const finalStatus = data.keterangan !== undefined ? data.keterangan : (data.status !== undefined ? data.status : existing.status)
+
     const updated = await ReportRepository.update(id, {
       ...data,
       day: dayName,
       photoUrl: finalPhotoUrl,
-      photoPublicId: finalPublicId
+      photoPublicId: finalPublicId,
+      status: finalStatus
     })
 
     await AuditRepository.log({

@@ -105,14 +105,14 @@
         @error="(msg) => toast.error(msg)"
       />
 
-      <!-- Keterangan (Otomatis Readonly per PRD) -->
+      <!-- Keterangan -->
       <div class="space-y-1.5">
-        <label class="block text-xs font-semibold text-slate-700">Keterangan / Status</label>
+        <label class="block text-xs font-semibold text-slate-700">Keterangan</label>
         <input 
-          value="Selesai (Menunggu Verifikasi)" 
+          v-model="form.keterangan" 
           type="text" 
-          class="input-base input-readonly font-semibold text-blue-700" 
-          readonly 
+          placeholder="Contoh: Terverifikasi, Selesai, SPV..." 
+          class="input-base" 
         />
       </div>
 
@@ -138,12 +138,14 @@
     <!-- Confirmation Modal Before Submit (PRD Section 17) -->
     <ConfirmModal 
       :is-open="isConfirmOpen"
+      :loading="isSubmitting"
       title="Apakah laporan sudah benar?"
       message="Pastikan tanggal, lokasi, uraian kegiatan, dan foto dokumentasi sudah sesuai sebelum dikirim."
       confirm-text="Ya, Simpan Laporan"
+      loading-text="Menyimpan Laporan..."
       variant="primary"
       @confirm="submitForm"
-      @cancel="isConfirmOpen = false"
+      @cancel="closeConfirm"
     />
   </div>
 </template>
@@ -171,10 +173,12 @@ const form = ref({
   lokasiKegiatan: '',
   uraianKegiatan: '',
   outputKegiatan: '',
-  foto: ''
+  foto: '',
+  keterangan: ''
 })
 
 const isConfirmOpen = ref(false)
+const isSubmitting = ref(false)
 const draftRestored = ref(false)
 
 onMounted(() => {
@@ -185,6 +189,7 @@ onMounted(() => {
     form.value.uraianKegiatan = laporanStore.draft.uraianKegiatan || ''
     form.value.outputKegiatan = laporanStore.draft.outputKegiatan || ''
     form.value.foto = laporanStore.draft.foto || ''
+    form.value.keterangan = laporanStore.draft.keterangan || ''
     draftRestored.value = true
   }
 })
@@ -198,7 +203,8 @@ watch(
       lokasiKegiatan: newVal.lokasiKegiatan,
       uraianKegiatan: newVal.uraianKegiatan,
       outputKegiatan: newVal.outputKegiatan,
-      foto: newVal.foto
+      foto: newVal.foto,
+      keterangan: newVal.keterangan
     })
   },
   { deep: true }
@@ -216,7 +222,8 @@ function discardDraft() {
     lokasiKegiatan: '',
     uraianKegiatan: '',
     outputKegiatan: '',
-    foto: ''
+    foto: '',
+    keterangan: ''
   }
   draftRestored.value = false
   toast.info('Draft berhasil dibersihkan.')
@@ -247,8 +254,15 @@ function openConfirm() {
   isConfirmOpen.value = true
 }
 
+function closeConfirm() {
+  if (!isSubmitting.value) {
+    isConfirmOpen.value = false
+  }
+}
+
 async function submitForm() {
-  isConfirmOpen.value = false
+  if (isSubmitting.value) return
+  isSubmitting.value = true
   const currentUser = authStore.currentUser
 
   try {
@@ -262,14 +276,17 @@ async function submitForm() {
       uraianKegiatan: form.value.uraianKegiatan,
       outputKegiatan: form.value.outputKegiatan,
       foto: form.value.foto,
-      keterangan: 'Terverifikasi'
+      keterangan: form.value.keterangan || ''
     })
 
     toast.success('Laporan berhasil disimpan!')
+    isConfirmOpen.value = false
     router.push('/laporan')
   } catch (err: any) {
     const errorMsg = err.data?.message || err.statusMessage || 'Gagal menyimpan laporan'
     toast.error(errorMsg)
+  } finally {
+    isSubmitting.value = false
   }
 }
 </script>

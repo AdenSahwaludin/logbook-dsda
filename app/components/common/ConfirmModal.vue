@@ -11,7 +11,8 @@
               class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
               :class="variant === 'danger' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'"
             >
-              <component :is="variant === 'danger' ? AlertTriangle : CheckCircle2" class="w-6 h-6" />
+              <Loader2 v-if="loading" class="w-6 h-6 animate-spin" />
+              <component v-else :is="variant === 'danger' ? AlertTriangle : CheckCircle2" class="w-6 h-6" />
             </div>
             <div>
               <h3 class="text-lg font-bold text-slate-900">{{ title }}</h3>
@@ -23,6 +24,7 @@
             <button 
               type="button" 
               class="btn-secondary text-sm py-2 px-4"
+              :disabled="loading"
               @click="$emit('cancel')"
             >
               {{ cancelText }}
@@ -30,10 +32,12 @@
             <button 
               type="button" 
               :class="variant === 'danger' ? 'btn-danger' : 'btn-primary'"
-              class="text-sm py-2 px-4"
+              class="text-sm py-2 px-4 flex items-center gap-2"
+              :disabled="loading"
               @click="$emit('confirm')"
             >
-              {{ confirmText }}
+              <Loader2 v-if="loading" class="w-4 h-4 animate-spin shrink-0" />
+              <span>{{ loading ? loadingText : confirmText }}</span>
             </button>
           </div>
         </div>
@@ -43,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { AlertTriangle, CheckCircle2 } from 'lucide-vue-next'
+import { AlertTriangle, CheckCircle2, Loader2 } from 'lucide-vue-next'
 
 withDefaults(defineProps<{
   isOpen: boolean
@@ -51,10 +55,14 @@ withDefaults(defineProps<{
   message: string
   confirmText?: string
   cancelText?: string
+  loadingText?: string
+  loading?: boolean
   variant?: 'primary' | 'danger'
 }>(), {
   confirmText: 'Ya, Lanjutkan',
   cancelText: 'Batal',
+  loadingText: 'Menyimpan...',
+  loading: false,
   variant: 'primary'
 })
 
@@ -71,3 +79,4 @@ defineEmits(['confirm', 'cancel'])
   opacity: 0;
 }
 </style>
+

@@ -8,10 +8,11 @@ export default defineEventHandler(async (event) => {
     if (!authUser) return sendApiError(event, 'Belum login', 401)
 
     const query = getQuery(event)
-    const month = query.month ? Number(query.month) : undefined
+    const startMonth = query.startMonth ? Number(query.startMonth) : (query.month ? Number(query.month) : undefined)
+    const endMonth = query.endMonth ? Number(query.endMonth) : startMonth
     const year = query.year ? Number(query.year) : undefined
 
-    const buffer = await ExportService.generatePdfBuffer(authUser.id, month, year)
+    const buffer = await ExportService.generatePdfBuffer(authUser.id, startMonth, endMonth, year)
 
     setHeader(event, 'Content-Type', 'application/pdf')
     setHeader(event, 'Content-Disposition', `attachment; filename="Jurnal_DSDA_${authUser.username}.pdf"`)

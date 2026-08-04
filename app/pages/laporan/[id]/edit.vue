@@ -103,6 +103,17 @@
         @error="(msg) => toast.error(msg)"
       />
 
+      <!-- Keterangan -->
+      <div class="space-y-1.5">
+        <label class="block text-xs font-semibold text-slate-700">Keterangan</label>
+        <input 
+          v-model="form.keterangan" 
+          type="text" 
+          placeholder="Contoh: Terverifikasi, Selesai, SPV..." 
+          class="input-base" 
+        />
+      </div>
+
       <!-- Form Actions -->
       <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
         <button 
@@ -125,12 +136,14 @@
     <!-- Confirm Modal -->
     <ConfirmModal 
       :is-open="isConfirmOpen"
+      :loading="isSubmitting"
       title="Simpan perubahan laporan?"
       message="Apakah Anda yakin ingin memperbarui data laporan ini?"
       confirm-text="Ya, Simpan Perubahan"
+      loading-text="Menyimpan Perubahan..."
       variant="primary"
       @confirm="submitForm"
-      @cancel="isConfirmOpen = false"
+      @cancel="closeConfirm"
     />
   </div>
 </template>
@@ -153,6 +166,7 @@ const toast = useToast()
 const laporanId = route.params.id as string
 const isReady = ref(false)
 const isConfirmOpen = ref(false)
+const isSubmitting = ref(false)
 
 const form = ref({
   tanggal: '',
@@ -160,7 +174,8 @@ const form = ref({
   lokasiKegiatan: '',
   uraianKegiatan: '',
   outputKegiatan: '',
-  foto: ''
+  foto: '',
+  keterangan: ''
 })
 
 const existingLaporan = computed(() => laporanStore.getLaporanById(laporanId))
@@ -173,7 +188,8 @@ onMounted(() => {
       lokasiKegiatan: existingLaporan.value.lokasiKegiatan,
       uraianKegiatan: existingLaporan.value.uraianKegiatan,
       outputKegiatan: existingLaporan.value.outputKegiatan,
-      foto: existingLaporan.value.foto
+      foto: existingLaporan.value.foto,
+      keterangan: existingLaporan.value.keterangan || ''
     }
   }
   setTimeout(() => {
@@ -193,22 +209,38 @@ function openConfirm() {
   isConfirmOpen.value = true
 }
 
-async function submitForm() {
-  isConfirmOpen.value = false
-  const updated = await laporanStore.updateLaporan(laporanId, {
-    tanggal: form.value.tanggal,
-    hari: form.value.hari,
-    lokasiKegiatan: form.value.lokasiKegiatan,
-    uraianKegiatan: form.value.uraianKegiatan,
-    outputKegiatan: form.value.outputKegiatan,
-    foto: form.value.foto
-  })
+function closeConfirm() {
+  if (!isSubmitting.value) {
+    isConfirmOpen.value = false
+  }
+}
 
-  if (updated) {
-    toast.success('Laporan berhasil diperbarui!')
-    router.push(`/laporan/${laporanId}`)
-  } else {
+async function submitForm() {
+  if (isSubmitting.value) return
+  isSubmitting.value = true
+
+  try {
+    const updated = await laporanStore.updateLaporan(laporanId, {
+      tanggal: form.value.tanggal,
+      hari: form.value.hari,
+      lokasiKegiatan: form.value.lokasiKegiatan,
+      uraianKegiatan: form.value.uraianKegiatan,
+      outputKegiatan: form.value.outputKegiatan,
+      foto: form.value.foto,
+      keterangan: form.value.keterangan
+    })
+
+    if (updated) {
+      toast.success('Laporan berhasil diperbarui!')
+      isConfirmOpen.value = false
+      router.push(`/laporan/${laporanId}`)
+    } else {
+      toast.error('Gagal memperbarui laporan')
+    }
+  } catch (err) {
     toast.error('Gagal memperbarui laporan')
+  } finally {
+    isSubmitting.value = false
   }
 }
 </script>

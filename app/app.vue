@@ -11,7 +11,7 @@
 import { useHead } from '#imports'
 
 useHead({
-  title: 'Logbook DSDA',
+  title: 'Logbook Bulanan',
   link: [
     { rel: 'icon', type: 'image/png', href: '/icon.png' }
   ]

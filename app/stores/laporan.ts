@@ -127,7 +127,9 @@ export const useLaporanStore = defineStore('laporan', () => {
           activity: newItem.uraianKegiatan,
           output: newItem.outputKegiatan,
           location: newItem.lokasiKegiatan,
-          photoUrl: newItem.foto
+          photoUrl: newItem.foto,
+          keterangan: newItem.keterangan,
+          status: newItem.keterangan
         }
       })
       if (res.success && res.data) {
@@ -164,7 +166,9 @@ export const useLaporanStore = defineStore('laporan', () => {
           activity: updatedFields.uraianKegiatan,
           output: updatedFields.outputKegiatan,
           location: updatedFields.lokasiKegiatan,
-          photoUrl: updatedFields.foto
+          photoUrl: updatedFields.foto,
+          keterangan: updatedFields.keterangan,
+          status: updatedFields.keterangan
         }
       })
     } catch (err) {
@@ -227,6 +231,33 @@ export const useLaporanStore = defineStore('laporan', () => {
     })
   }
 
+  function getLaporanFilteredRange(userId?: string, startMonth?: number | string, endMonth?: number | string, year?: number | string, search?: string) {
+    return laporanList.value.filter(item => {
+      if (userId && item.userId !== userId) return false
+
+      if (item.tanggal) {
+        const itemDate = new Date(item.tanggal)
+        const itemMonth = itemDate.getMonth() + 1
+        const itemYear = itemDate.getFullYear()
+
+        if (year && itemYear !== Number(year)) return false
+        if (startMonth && itemMonth < Number(startMonth)) return false
+        if (endMonth && itemMonth > Number(endMonth)) return false
+      }
+
+      if (search && search.trim() !== '') {
+        const q = search.toLowerCase().trim()
+        const matchUraian = item.uraianKegiatan?.toLowerCase().includes(q)
+        const matchOutput = item.outputKegiatan?.toLowerCase().includes(q)
+        const matchLokasi = item.lokasiKegiatan?.toLowerCase().includes(q)
+        const matchUser = item.userName?.toLowerCase().includes(q)
+        if (!matchUraian && !matchOutput && !matchLokasi && !matchUser) return false
+      }
+
+      return true
+    })
+  }
+
   return {
     laporanList,
     draft,
@@ -238,6 +269,7 @@ export const useLaporanStore = defineStore('laporan', () => {
     updateLaporan,
     deleteLaporan,
     getLaporanById,
-    getLaporanFiltered
+    getLaporanFiltered,
+    getLaporanFilteredRange
   }
 })

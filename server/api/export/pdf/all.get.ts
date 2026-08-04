@@ -16,7 +16,8 @@ export default defineEventHandler(async (event) => {
     }
 
     const query = getQuery(event)
-    const month = query.month ? Number(query.month) : (new Date().getMonth() + 1)
+    const startMonth = query.startMonth ? Number(query.startMonth) : (query.month ? Number(query.month) : (new Date().getMonth() + 1))
+    const endMonth = query.endMonth ? Number(query.endMonth) : startMonth
     const year = query.year ? Number(query.year) : new Date().getFullYear()
     const targetUserId = query.userId ? String(query.userId) : undefined
 
@@ -29,10 +30,12 @@ export default defineEventHandler(async (event) => {
     }
 
     const cleanName = targetName.replace(/[^a-zA-Z0-9]/g, '_')
-    const monthName = MONTH_NAMES_ID[month - 1] || 'Bulan'
-    const fileName = `${cleanName}_Laporan_Bulanan_${monthName}_${year}.pdf`
+    const startName = MONTH_NAMES_ID[startMonth - 1] || 'Bulan'
+    const endName = MONTH_NAMES_ID[endMonth - 1] || 'Bulan'
+    const monthPart = startMonth === endMonth ? startName : `${startName}_s.d_${endName}`
+    const fileName = `${cleanName}_Laporan_Bulanan_${monthPart}_${year}.pdf`
 
-    const buffer = await ExportService.generatePdfBuffer(targetUserId, month, year)
+    const buffer = await ExportService.generatePdfBuffer(targetUserId, startMonth, endMonth, year)
 
     setHeader(event, 'Content-Type', 'application/pdf')
     setHeader(event, 'Content-Disposition', `attachment; filename="${fileName}"`)
