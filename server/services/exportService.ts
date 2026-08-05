@@ -157,7 +157,11 @@ export class ExportService {
 
       const tableBody = monthData.map(item => {
         const rep = item.report
-        const defaultKet = `SPV.${lokasiPenempatan} Kej.Cipedang ${kabupaten}`
+        const keteranganVal = item.isFilled
+          ? (rep.status !== undefined && rep.status !== null && String(rep.status).trim() !== ''
+              ? rep.status
+              : (rep.description ? rep.description : `SPV.${lokasiPenempatan}`))
+          : ''
         return [
           item.no.toString(),
           item.dayName,
@@ -166,7 +170,7 @@ export class ExportService {
           item.isFilled ? (rep.output || '') : '',
           item.isFilled ? (rep.location || '') : '',
           '', // Image rendered via didDrawCell
-          item.isFilled ? defaultKet : '',
+          keteranganVal,
         ]
       })
 
@@ -341,6 +345,11 @@ export class ExportService {
           const rep = item.report
           const isFilled = item.isFilled
           const shading = isFilled ? undefined : { fill: 'CC0000' }
+          const keteranganVal = isFilled
+            ? (rep.status !== undefined && rep.status !== null && String(rep.status).trim() !== ''
+                ? rep.status
+                : (rep.description ? rep.description : `SPV.${lokasiPenempatan}`))
+            : ''
 
           const docxImageCellChildren = (isFilled && item.imageBuffer)
             ? [new Paragraph({ alignment: AlignmentType.CENTER, children: [new ImageRun({ data: item.imageBuffer, transformation: { width: 45, height: 45 } })] })]
@@ -355,7 +364,7 @@ export class ExportService {
               new TableCell({ shading, children: [new Paragraph({ children: [new TextRun({ text: isFilled ? (rep.output || '') : '', color: isFilled ? '000000' : 'CC0000' })] })] }),
               new TableCell({ shading, children: [new Paragraph({ children: [new TextRun({ text: isFilled ? (rep.location || '') : '', color: isFilled ? '000000' : 'CC0000' })] })] }),
               new TableCell({ shading, children: docxImageCellChildren }),
-              new TableCell({ shading, children: [new Paragraph({ children: [new TextRun({ text: isFilled ? `SPV.${lokasiPenempatan}` : '', color: isFilled ? '000000' : 'CC0000' })] })] })
+              new TableCell({ shading, children: [new Paragraph({ children: [new TextRun({ text: keteranganVal, color: isFilled ? '000000' : 'CC0000' })] })] })
             ]
           })
         })

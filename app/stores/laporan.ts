@@ -96,7 +96,7 @@ export const useLaporanStore = defineStore('laporan', () => {
       outputKegiatan: r.output || r.outputKegiatan,
       lokasiKegiatan: r.location || r.lokasiKegiatan,
       foto: r.photoUrl || r.foto,
-      keterangan: r.status || r.keterangan || 'Terverifikasi',
+      keterangan: (r.status !== undefined && r.status !== null) ? r.status : (r.keterangan !== undefined && r.keterangan !== null ? r.keterangan : ''),
       createdAt: r.createdAt || new Date().toISOString()
     }
   }

@@ -87,21 +87,29 @@
             </div>
           </div>
 
-          <!-- Foto Dokumentasi (Zoomable Lightbox per PRD) -->
+          <!-- Keterangan -->
+          <div class="space-y-1">
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Keterangan</p>
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-sm font-semibold text-slate-800 leading-relaxed">
+              {{ laporan.keterangan || '-' }}
+            </div>
+          </div>
+
+          <!-- Foto Dokumentasi -->
           <div class="space-y-2">
             <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Dokumentasi Foto</p>
             <div 
-              v-if="laporan.foto" 
+              v-if="laporan.foto && !imageError" 
               class="relative rounded-2xl overflow-hidden border border-slate-200 group cursor-pointer"
               @click="openLightbox = true"
             >
-              <img :src="laporan.foto" alt="Dokumentasi Kegiatan" class="w-full max-h-96 object-cover" />
+              <img :src="laporan.foto" alt="Dokumentasi Kegiatan" class="w-full max-h-96 object-cover" @error="imageError = true" />
               <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2 text-white font-semibold text-xs">
                 <Maximize2 class="w-5 h-5" />
                 Klik untuk memperbesar foto
               </div>
             </div>
-            <p v-else class="text-xs text-slate-400 italic">Tidak ada foto dokumentasi.</p>
+            <p v-else class="text-xs text-slate-400 italic p-4 bg-slate-50 rounded-2xl border border-slate-200">Tidak ada foto dokumentasi / foto gagal dimuat.</p>
           </div>
         </div>
       </div>
@@ -109,7 +117,7 @@
       <!-- Lightbox Zoom Modal -->
       <Teleport to="body">
         <div 
-          v-if="openLightbox && laporan?.foto" 
+          v-if="openLightbox && laporan?.foto && !imageError" 
           class="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
           @click="openLightbox = false"
         >
@@ -154,6 +162,7 @@ const isReady = ref(false)
 const openLightbox = ref(false)
 const isConfirmOpen = ref(false)
 const isDeleting = ref(false)
+const imageError = ref(false)
 
 const laporanId = route.params.id as string
 
