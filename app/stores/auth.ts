@@ -23,7 +23,9 @@ export const useAuthStore = defineStore('auth', () => {
   const isAdmin = computed(() => currentUser.value?.role === 'admin')
 
   async function initAuth() {
-    // 1. Restore from localStorage instantly on client side
+    const token = useCookie('auth_token')
+
+    // 1. Restore from localStorage instantly on client side if saved
     if (import.meta.client && !currentUser.value) {
       const saved = localStorage.getItem('dsda_auth_user')
       if (saved) {
@@ -35,7 +37,16 @@ export const useAuthStore = defineStore('auth', () => {
       }
     }
 
-    // 2. Validate token against backend API (forwarding cookie headers if SSR)
+    // 2. If no token cookie exists, reset session
+    if (!token.value) {
+      currentUser.value = null
+      if (import.meta.client) {
+        localStorage.removeItem('dsda_auth_user')
+      }
+      return
+    }
+
+    // 3. Validate token against backend API
     try {
       const headers = import.meta.server ? useRequestHeaders(['cookie']) as Record<string, string> : undefined
       const res = await $fetch<{ success: boolean; data: UserProfile }>('/api/auth/me', { headers })
@@ -44,14 +55,14 @@ export const useAuthStore = defineStore('auth', () => {
         if (import.meta.client) {
           localStorage.setItem('dsda_auth_user', JSON.stringify(currentUser.value))
         }
+      } else {
+        throw new Error('Unauthenticated')
       }
     } catch (err) {
-      const token = useCookie('auth_token')
-      if (!token.value) {
-        currentUser.value = null
-        if (import.meta.client) {
-          localStorage.removeItem('dsda_auth_user')
-        }
+      currentUser.value = null
+      token.value = null
+      if (import.meta.client) {
+        localStorage.removeItem('dsda_auth_user')
       }
     }
   }
@@ -75,6 +86,9 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (res.success && res.data) {
         currentUser.value = formatUser(res.data.user)
+        const tokenCookie = useCookie('auth_token', { maxAge: 7 * 24 * 60 * 60, path: '/', sameSite: 'lax' })
+        tokenCookie.value = res.data.token
+
         if (import.meta.client) {
           localStorage.setItem('dsda_auth_user', JSON.stringify(currentUser.value))
         }
@@ -94,6 +108,9 @@ export const useAuthStore = defineStore('auth', () => {
       // Ignore
     }
     currentUser.value = null
+    const tokenCookie = useCookie('auth_token', { path: '/' })
+    tokenCookie.value = null
+
     if (import.meta.client) {
       localStorage.removeItem('dsda_auth_user')
     }

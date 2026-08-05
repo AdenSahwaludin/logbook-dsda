@@ -19,8 +19,9 @@ export default defineEventHandler(async (event) => {
     const result = await AuthService.login(username, password, ipAddress, userAgent)
 
     setCookie(event, 'auth_token', result.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      httpOnly: false,
+      secure: false,
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60,
       path: '/'
     })
