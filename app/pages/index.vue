@@ -46,6 +46,9 @@
           </NuxtLink>
         </div>
 
+        <!-- Full Monthly Report Calendar -->
+        <ReportCalendar />
+
         <!-- Recent Activities Header -->
         <div class="space-y-4">
           <div class="flex items-center justify-between">
@@ -257,6 +260,7 @@ import { useAuthStore } from '~/stores/auth'
 import { useLaporanStore } from '~/stores/laporan'
 import { useUsersStore } from '~/stores/users'
 import SkeletonLoader from '~/components/common/SkeletonLoader.vue'
+import ReportCalendar from '~/components/common/ReportCalendar.vue'
 import { 
   Calendar, 
   CheckCircle2, 

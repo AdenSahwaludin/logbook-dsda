@@ -123,12 +123,14 @@
       <!-- Confirm Delete Modal -->
       <ConfirmModal 
         :is-open="isConfirmOpen"
+        :loading="isDeleting"
         title="Hapus Laporan Kegiatan?"
         message="Apakah Anda yakin ingin menghapus data laporan ini?"
         confirm-text="Ya, Hapus"
+        loading-text="Menghapus..."
         variant="danger"
         @confirm="handleDelete"
-        @cancel="isConfirmOpen = false"
+        @cancel="closeDeleteConfirm"
       />
     </template>
   </div>
@@ -151,6 +153,7 @@ const toast = useToast()
 const isReady = ref(false)
 const openLightbox = ref(false)
 const isConfirmOpen = ref(false)
+const isDeleting = ref(false)
 
 const laporanId = route.params.id as string
 
@@ -168,11 +171,28 @@ function formatDate(dateStr?: string) {
   return `${d}/${m}/${y}`
 }
 
-function handleDelete() {
-  if (laporan.value) {
-    laporanStore.deleteLaporan(laporan.value.id)
-    toast.success('Laporan berhasil dihapus.')
-    router.push('/laporan')
+function closeDeleteConfirm() {
+  if (!isDeleting.value) {
+    isConfirmOpen.value = false
+  }
+}
+
+async function handleDelete() {
+  if (isDeleting.value || !laporan.value) return
+  isDeleting.value = true
+  try {
+    const success = await laporanStore.deleteLaporan(laporan.value.id)
+    if (success) {
+      toast.success('Laporan berhasil dihapus.')
+      isConfirmOpen.value = false
+      router.push('/laporan')
+    } else {
+      toast.error('Gagal menghapus laporan')
+    }
+  } catch (err) {
+    toast.error('Terjadi kesalahan saat menghapus laporan')
+  } finally {
+    isDeleting.value = false
   }
 }
 </script>

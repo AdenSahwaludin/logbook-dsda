@@ -174,12 +174,14 @@
     <!-- Confirm Delete Modal -->
     <ConfirmModal 
       :is-open="isConfirmOpen"
+      :loading="isDeleting"
       title="Yakin ingin menghapus laporan?"
       message="Data laporan kegiatan harian yang dihapus tidak dapat dikembalikan."
       confirm-text="Hapus Laporan"
+      loading-text="Menghapus Laporan..."
       variant="danger"
       @confirm="handleDelete"
-      @cancel="isConfirmOpen = false"
+      @cancel="closeDeleteConfirm"
     />
   </div>
 </template>
@@ -215,28 +217,61 @@ const currentPage = ref(1)
 const itemsPerPage = 10
 
 const isConfirmOpen = ref(false)
+const isDeleting = ref(false)
 const targetDeleteId = ref<string | null>(null)
 
 const BULAN_LIST = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
   'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ]
-const TAHUN_LIST = [2026, 2025, 2024]
+
+const TAHUN_LIST = computed(() => {
+  const currentY = new Date().getFullYear()
+  return [currentY - 1, currentY, currentY + 1]
+})
 
 onMounted(() => {
   setTimeout(() => {
     isLoaded.value = true
-  }, 200)
+  }, 150)
 })
 
 const filteredLaporan = computed(() => {
-  const targetUser = authStore.isAdmin ? undefined : authStore.currentUser?.id
-  return laporanStore.getLaporanFiltered(
-    targetUser,
-    filterMonth.value,
-    filterYear.value,
-    searchQuery.value
-  )
+  let list = authStore.isAdmin 
+    ? laporanStore.laporanList 
+    : laporanStore.getLaporanFiltered(authStore.currentUser?.id)
+
+  if (filterMonth.value !== '') {
+    const m = Number(filterMonth.value)
+    list = list.filter(item => {
+      const parts = item.tanggal.split('-')
+      return parts.length === 3 && Number(parts[1]) === m
+    })
+  }
+
+  if (filterYear.value !== '') {
+    const y = Number(filterYear.value)
+    list = list.filter(item => {
+      const parts = item.tanggal.split('-')
+      return parts.length === 3 && Number(parts[0]) === y
+    })
+  }
+
+  if (searchQuery.value.trim()) {
+    const q = searchQuery.value.toLowerCase().trim()
+    list = list.filter(item => 
+      item.uraianKegiatan.toLowerCase().includes(q) ||
+      item.lokasiKegiatan.toLowerCase().includes(q) ||
+      item.outputKegiatan.toLowerCase().includes(q) ||
+      (item.userName && item.userName.toLowerCase().includes(q))
+    )
+  }
+
+  return list
+})
+
+watch([searchQuery, filterMonth, filterYear], () => {
+  currentPage.value = 1
 })
 
 const totalPages = computed(() => Math.ceil(filteredLaporan.value.length / itemsPerPage) || 1)
@@ -244,10 +279,6 @@ const totalPages = computed(() => Math.ceil(filteredLaporan.value.length / items
 const paginatedLaporan = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage
   return filteredLaporan.value.slice(start, start + itemsPerPage)
-})
-
-watch([searchQuery, filterMonth, filterYear], () => {
-  currentPage.value = 1
 })
 
 function formatIndonesianDate(dateStr: string, dayName?: string) {
@@ -267,16 +298,29 @@ function openDeleteConfirm(id: string) {
   isConfirmOpen.value = true
 }
 
+function closeDeleteConfirm() {
+  if (!isDeleting.value) {
+    isConfirmOpen.value = false
+    targetDeleteId.value = null
+  }
+}
+
 async function handleDelete() {
-  if (targetDeleteId.value) {
+  if (isDeleting.value || !targetDeleteId.value) return
+  isDeleting.value = true
+  try {
     const success = await laporanStore.deleteLaporan(targetDeleteId.value)
     if (success) {
       toast.success('Berhasil menghapus laporan!')
     } else {
       toast.error('Gagal menghapus laporan')
     }
+  } catch (err) {
+    toast.error('Terjadi kesalahan saat menghapus laporan')
+  } finally {
+    isDeleting.value = false
+    isConfirmOpen.value = false
+    targetDeleteId.value = null
   }
-  isConfirmOpen.value = false
-  targetDeleteId.value = null
 }
 </script>
