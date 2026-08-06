@@ -64,14 +64,16 @@ export async function fetchIndonesianHolidays(year: number): Promise<Record<stri
   }
 
   try {
-    // Try primary online API (date.nager.at)
-    const res = await $fetch<Array<{ date: string; localName: string; name: string }>>(
-      `https://date.nager.at/api/v3/publicholidays/${year}/ID`
+    // Primary API: Official SKB 3 Menteri Indonesian Holiday API (Tanggal Merah & Cuti Bersama)
+    const res = await $fetch<{ success: boolean; data: Array<{ date: string; name: string; type: string }> }>(
+      `https://tanggalmerah.upset.dev/api/holidays?year=${year}`
     )
-    if (Array.isArray(res) && res.length > 0) {
+    if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
       const map: Record<string, string> = {}
-      res.forEach(item => {
-        map[item.date] = item.localName || item.name
+      res.data.forEach(item => {
+        const isLeave = item.type === 'leave'
+        const title = isLeave && !item.name.toLowerCase().includes('cuti') ? `Cuti Bersama ${item.name}` : item.name
+        map[item.date] = title
       })
 
       holidayCache.set(year, map)
@@ -80,25 +82,29 @@ export async function fetchIndonesianHolidays(year: number): Promise<Record<stri
       }
       return map
     }
-  } catch (err) {
-    // Try secondary fallback API
+  } catch {
+    // Secondary Fallback API: APIHariLibur_V2 GitHub Repository
     try {
-      const res = await $fetch<Array<{ tanggal: string; keterangan: string }>>(
-        `https://dayoffapi.vercel.app/api?year=${year}`
+      const rawData = await $fetch<Record<string, { holiday: boolean; summary: string[]; description: string[] }>>(
+        'https://raw.githubusercontent.com/guangrei/APIHariLibur_V2/main/calendar.min.json'
       )
-      if (Array.isArray(res) && res.length > 0) {
+      if (rawData && typeof rawData === 'object') {
         const map: Record<string, string> = {}
-        res.forEach(item => {
-          map[item.tanggal] = item.keterangan
+        Object.entries(rawData).forEach(([dateStr, details]) => {
+          if (dateStr.startsWith(String(year)) && details && (details.holiday || (details.summary && details.summary.length))) {
+            map[dateStr] = Array.isArray(details.summary) ? details.summary.join(', ') : String(details.summary)
+          }
         })
-        holidayCache.set(year, map)
-        if (import.meta.client) {
-          localStorage.setItem(cacheKey, JSON.stringify(map))
+        if (Object.keys(map).length > 0) {
+          holidayCache.set(year, map)
+          if (import.meta.client) {
+            localStorage.setItem(cacheKey, JSON.stringify(map))
+          }
+          return map
         }
-        return map
       }
     } catch {
-      // ignore
+      // ignore parsing error
     }
   }
 

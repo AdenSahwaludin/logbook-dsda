@@ -11,15 +11,15 @@ const MONTH_NAMES_ID = [
 export default defineEventHandler(async (event) => {
   try {
     const authUser = event.context.user
-    if (authUser?.role !== 'admin') {
-      return sendApiError(event, 'Akses ditolak: Hanya Admin yang dapat mendownload export laporan', 403)
-    }
-
     const query = getQuery(event)
+    const targetUserId = query.userId ? String(query.userId) : undefined
+
+    if (authUser?.role !== 'admin' && targetUserId !== authUser?.id) {
+      return sendApiError(event, 'Akses ditolak: Anda hanya dapat mendownload export laporan milik sendiri', 403)
+    }
     const startMonth = query.startMonth ? Number(query.startMonth) : (query.month ? Number(query.month) : (new Date().getMonth() + 1))
     const endMonth = query.endMonth ? Number(query.endMonth) : startMonth
     const year = query.year ? Number(query.year) : new Date().getFullYear()
-    const targetUserId = query.userId ? String(query.userId) : undefined
 
     let targetName = 'Rekap'
     if (targetUserId) {

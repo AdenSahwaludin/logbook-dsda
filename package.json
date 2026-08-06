@@ -1,5 +1,6 @@
 {
   "name": "Logbook-Bulanan",
+  "version": "1.0.5",
   "type": "module",
   "private": true,
   "scripts": {

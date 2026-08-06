@@ -233,7 +233,17 @@ async function generatePDF() {
     toast.success(`PDF Berhasil di-download (${fileName})`)
   } catch (err: any) {
     console.error('PDF export error:', err)
-    toast.error('Gagal mendownload file PDF')
+    let errorMessage = 'Gagal mendownload file PDF'
+    if (err.data instanceof Blob) {
+      try {
+        const text = await err.data.text()
+        const parsed = JSON.parse(text)
+        if (parsed.message) errorMessage = parsed.message
+      } catch (e) {}
+    } else if (err.statusMessage || err.message) {
+      errorMessage = err.statusMessage || err.message
+    }
+    toast.error(errorMessage)
   } finally {
     isGeneratingPDF.value = false
   }
@@ -265,7 +275,17 @@ async function generateWord() {
     toast.success(`Dokumen Word berhasil di-download (${fileName})`)
   } catch (err: any) {
     console.error('Word export error:', err)
-    toast.error('Gagal mendownload dokumen MS Word')
+    let errorMessage = 'Gagal mendownload dokumen MS Word'
+    if (err.data instanceof Blob) {
+      try {
+        const text = await err.data.text()
+        const parsed = JSON.parse(text)
+        if (parsed.message) errorMessage = parsed.message
+      } catch (e) {}
+    } else if (err.statusMessage || err.message) {
+      errorMessage = err.statusMessage || err.message
+    }
+    toast.error(errorMessage)
   } finally {
     isGeneratingWord.value = false
   }

@@ -7,7 +7,7 @@
       <!-- ==================== USER DASHBOARD VIEW ==================== -->
       <div v-if="!authStore.isAdmin" class="space-y-6">
         <!-- Status Hari Ini Card ONLY (Banner & Total Laporan Bulan Ini Removed) -->
-        <div class="card-base p-5 sm:p-6 flex items-center justify-between border border-slate-200/80 shadow-sm">
+        <div class="card-base p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-slate-200/80 shadow-sm">
           <div class="space-y-1.5">
             <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Status Presensi Hari Ini</p>
             <div class="flex items-center gap-2">
@@ -23,7 +23,7 @@
           </div>
           <NuxtLink 
             to="/laporan/tambah" 
-            class="btn-primary text-xs py-2.5 px-4 shadow-md shadow-blue-500/20 flex items-center gap-2"
+            class="btn-primary text-xs py-2.5 px-4 shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 w-full sm:w-auto"
           >
             <Plus class="w-4 h-4" />
             <span>Buat Laporan</span>
@@ -108,9 +108,14 @@
         <!-- Welcome Banner Admin -->
         <div class="card-base p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-slate-800 to-blue-950 text-white border-0 shadow-xl relative overflow-hidden rounded-3xl">
           <div class="relative z-10 space-y-3">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/10 backdrop-blur-md border border-white/15 rounded-full text-xs font-semibold text-slate-200">
-              <Calendar class="w-3.5 h-3.5 text-blue-400" />
-              <span>{{ currentFormattedDate }}</span>
+            <div class="flex items-center gap-2 flex-wrap">
+              <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/10 backdrop-blur-md border border-white/15 rounded-full text-xs font-semibold text-slate-200">
+                <Calendar class="w-3.5 h-3.5 text-blue-400" />
+                <span>{{ currentFormattedDate }}</span>
+              </div>
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-500/30 backdrop-blur-md border border-purple-400/40 rounded-full text-xs font-bold text-purple-200">
+                <span>Versi 1.0.5</span>
+              </div>
             </div>
             <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
               Halo, {{ authStore.currentUser?.name }} 👋

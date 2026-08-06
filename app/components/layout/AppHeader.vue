@@ -9,10 +9,10 @@
             Logbook Bulanan
             <ClientOnly>
               <span 
-                class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full"
+                class="text-xs font-semibold px-2.5 py-0.5 rounded-full max-w-[140px] sm:max-w-[200px] truncate"
                 :class="authStore.isAdmin ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'"
               >
-                {{ authStore.currentUser?.role || 'User' }}
+                {{ authStore.currentUser?.name || 'User' }}
               </span>
             </ClientOnly>
           </h1>

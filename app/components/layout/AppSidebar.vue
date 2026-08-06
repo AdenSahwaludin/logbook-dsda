@@ -36,7 +36,10 @@
 
       <!-- Admin Menu Section -->
       <div v-if="authStore.isAdmin">
-        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 mb-2">Kelola System (Admin)</p>
+        <div class="flex items-center justify-between px-3 mb-2">
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Kelola System</p>
+          <span class="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-100">v1.0.5</span>
+        </div>
         <nav class="space-y-1">
           <NuxtLink 
             to="/users" 
